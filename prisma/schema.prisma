@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  password  String
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  bookings  Booking[]
+  reviews   Review[]
+  tenant    Tenant?
+
+  @@map("users")
+}
+
+// Tenant Model
+model Tenant {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  businessName String
+  address     String
+  phone       String
+  description String?
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  properties Property[]
+
+  @@map("tenants")
+}
+
+// Property Model
+model Property {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  description String
+  address     String
+  city        String
+  latitude    Float?
+  longitude   Float?
+  amenities   String[] // Array of amenities
+  images      String[] // Array of image URLs
+  basePrice   Decimal  @db.Decimal(10, 2)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  rooms      Room[]
+  bookings   Booking[]
+  reviews    Review[]
+  priceRules PriceRule[]
+
+  @@map("properties")
+}
+
+// Room Model
+model Room {
+  id          String   @id @default(cuid())
+  propertyId  String
+  name        String
+  description String?
+  capacity    Int
+  basePrice   Decimal  @db.Decimal(10, 2)
+  images      String[] // Array of image URLs
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@map("rooms")
+}
+
+// Price Rule Model for dynamic pricing
+model PriceRule {
+  id         String     @id @default(cuid())
+  propertyId String
+  name       String
+  startDate  DateTime
+  endDate    DateTime
+  priceType  PriceType  // PERCENTAGE or FIXED
+  value      Decimal    @db.Decimal(10, 2)
+  isActive   Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  // Relations
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@map("price_rules")
+}
+
+// Booking Model
+model Booking {
+  id          String        @id @default(cuid())
+  userId      String
+  propertyId  String
+  roomId      String
+  checkIn     DateTime
+  checkOut    DateTime
+  guests      Int
+  totalPrice  Decimal       @db.Decimal(10, 2)
+  status      BookingStatus @default(PENDING_PAYMENT)
+  paymentProof String?      // URL to payment proof image
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  room     Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  review   Review?
+
+  @@map("bookings")
+}
+
+// Review Model
+model Review {
+  id         String   @id @default(cuid())
+  userId     String
+  propertyId String
+  bookingId  String   @unique
+  rating     Int      // 1-5 stars
+  comment    String
+  response   String?  // Tenant response
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+// Enums
+enum UserRole {
+  USER
+  TENANT
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  PAYMENT_CONFIRMED
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PriceType {
+  PERCENTAGE
+  FIXED
+}
