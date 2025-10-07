@@ -36,7 +36,7 @@ export default function Home() {
             Temukan Penginapan
             <span className="text-blue-600 block">Terbaik untuk Anda</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-sm text-gray-600 max-w-2xl mx-auto">
             Bandingkan harga penginapan berdasarkan tanggal dan dapatkan penawaran terbaik 
             untuk liburan Anda
           </p>
