@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registerSchema } from '@/lib/validation'
+import { api } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 
@@ -40,26 +41,13 @@ export default function RegisterPage() {
     setError('')
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-
-      const result = await response.json()
-
-      if (response.ok) {
-        setSuccess(true)
-        setTimeout(() => {
-          router.push('/login')
-        }, 2000)
-      } else {
-        setError(result.error || 'Registrasi gagal')
-      }
-    } catch (error) {
-      setError('Terjadi kesalahan server')
+      await api.post('/auth/register', data)
+      setSuccess(true)
+      setTimeout(() => {
+        router.push('/login')
+      }, 2000)
+    } catch (error: any) {
+      setError(error.message || 'Registrasi gagal')
     } finally {
       setIsLoading(false)
     }

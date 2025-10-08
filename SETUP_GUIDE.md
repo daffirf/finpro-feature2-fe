@@ -1,234 +1,225 @@
-# 🏠 Property Renting Web App - Setup Guide
+# Setup Guide - Property Renting Frontend
 
-Selamat! Aplikasi Property Renting Web App telah berhasil dibuat dengan semua fitur yang diminta. Berikut adalah panduan lengkap untuk setup dan menjalankan aplikasi.
+Panduan lengkap untuk setup dan menjalankan aplikasi frontend.
 
-## ✅ Fitur yang Sudah Diimplementasi
+## Prerequisites
 
-### 🔐 Sistem Autentikasi
-- ✅ Register untuk User dan Tenant
-- ✅ Login/Logout dengan JWT
-- ✅ Role-based access control
-- ✅ Middleware untuk protected routes
+Pastikan sudah terinstall:
+- Node.js (versi 18 atau lebih tinggi)
+- npm atau yarn
+- Git
+- **Backend API sudah berjalan** (lihat repository backend)
 
-### 👤 Fitur User (Penyewa)
-- ✅ Landing page dengan form pencarian
-- ✅ Pencarian properti berdasarkan destinasi, tanggal, dan jumlah tamu
-- ✅ Filter dan sorting (harga, rating, nama)
-- ✅ Halaman detail properti dengan kalender harga
-- ✅ Perbandingan harga pada tanggal berbeda
-- ✅ Sistem booking dengan validasi ketersediaan
-- ✅ Upload bukti pembayaran (JPG/PNG, max 1MB)
-- ✅ Riwayat pemesanan
-- ✅ Review dan rating setelah check-out
+## Step-by-Step Setup
 
-### 🏢 Fitur Tenant (Pemilik)
-- ✅ Dashboard tenant dengan statistik
-- ✅ Manajemen properti (CRUD)
-- ✅ Manajemen kamar untuk setiap properti
-- ✅ Atur harga dinamis berdasarkan tanggal
-- ✅ Konfirmasi/tolak pembayaran manual
-- ✅ Laporan penjualan dan analisis
-- ✅ Response terhadap review user
-- ✅ Kelola ketersediaan properti
+### 1. Clone Repository
 
-### 💰 Sistem Harga Dinamis
-- ✅ Harga base untuk setiap properti/kamar
-- ✅ Price rules berdasarkan tanggal (persentase atau fixed)
-- ✅ Kalender harga real-time
-- ✅ Automatic pricing calculation
+```bash
+git clone <repository-url>
+cd finpro-feature2-fe
+```
 
-### 📱 UI/UX Features
-- ✅ Mobile-first responsive design
-- ✅ Modern UI dengan Tailwind CSS
-- ✅ Loading states dan error handling
-- ✅ Toast notifications
-- ✅ Modal components
-- ✅ Image gallery dengan navigation
+### 2. Install Dependencies
 
-## 🚀 Cara Setup Aplikasi
-
-### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. Setup Database
-Buat file `.env.local` di root project:
+Ini akan menginstall semua dependencies yang diperlukan:
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+- React Hook Form
+- Zod
+- dan lainnya...
+
+### 3. Setup Environment Variables
+
+```bash
+# Copy file env.example ke .env.local
+cp env.example .env.local
+```
+
+Edit file `.env.local` dan sesuaikan dengan konfigurasi Anda:
+
 ```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/property_rent"
+# URL Backend API (ganti dengan URL backend Anda)
+NEXT_PUBLIC_API_URL="http://localhost:8000/api"
 
-# JWT Secret
-JWT_SECRET="your-super-secret-jwt-key-here-change-this-in-production"
-
-# Email Configuration (optional)
-SMTP_HOST="smtp.gmail.com"
-SMTP_PORT=587
-SMTP_USER="your-email@gmail.com"
-SMTP_PASS="your-app-password"
-
-# App Configuration
+# URL Frontend App
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-### 3. Setup Database dengan Prisma
-```bash
-# Generate Prisma client
-npx prisma generate
+**Penting**: 
+- `NEXT_PUBLIC_API_URL` harus sesuai dengan URL backend API Anda
+- Jika backend berjalan di port lain, sesuaikan URL-nya
 
-# Push schema ke database (untuk development)
-npx prisma db push
+### 4. Jalankan Development Server
 
-# Atau buat dan jalankan migration (untuk production)
-npx prisma migrate dev --name init
-```
-
-### 4. Jalankan Aplikasi
 ```bash
 npm run dev
 ```
 
-Aplikasi akan berjalan di: http://localhost:3000
+Aplikasi akan berjalan di: **http://localhost:3000**
 
-## 📂 Struktur Project
+### 5. Verifikasi Setup
 
+Buka browser dan akses:
+- Homepage: `http://localhost:3000`
+- Login page: `http://localhost:3000/login`
+- Register page: `http://localhost:3000/register`
+
+Jika halaman terbuka tanpa error, setup berhasil! ✅
+
+## Konfigurasi Backend
+
+Pastikan backend API sudah:
+1. ✅ Berjalan dan dapat diakses
+2. ✅ CORS sudah dikonfigurasi untuk menerima request dari frontend
+3. ✅ Database sudah setup dan migration sudah dijalankan
+
+### Test Koneksi Backend
+
+Coba akses endpoint backend melalui browser atau Postman:
 ```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/               # API Routes
-│   │   ├── auth/          # Authentication endpoints
-│   │   ├── properties/    # Property management
-│   │   ├── bookings/      # Booking system
-│   │   ├── reviews/       # Review system
-│   │   ├── tenant/        # Tenant management
-│   │   └── user/          # User endpoints
-│   ├── booking/           # Booking pages
-│   ├── property/          # Property detail pages
-│   ├── search/            # Search results page
-│   ├── tenant/            # Tenant dashboard
-│   ├── user/              # User pages
-│   └── layout.tsx         # Root layout
-├── components/            # Reusable components
-│   ├── forms/             # Form components
-│   ├── ui/                # UI components
-│   └── ...
-├── lib/                   # Utility libraries
-│   ├── auth.ts            # Authentication utilities
-│   ├── prisma.ts          # Database client
-│   ├── validation.ts      # Validation schemas
-│   └── utils.ts           # Helper functions
-└── generated/prisma/      # Generated Prisma client
+http://localhost:8000/api/properties
 ```
 
-## 🔧 API Endpoints
+Jika dapat response, koneksi backend OK!
 
-### Authentication
-- `POST /api/auth/register` - Register user/tenant
-- `POST /api/auth/login` - Login
-- `POST /api/auth/logout` - Logout
-- `GET /api/auth/me` - Get current user
+## Environment Variables Explained
 
-### Properties
-- `GET /api/properties/search` - Search properties
-- `GET /api/properties/[id]` - Get property detail
-- `GET /api/properties/[id]/prices` - Get dynamic prices
+### NEXT_PUBLIC_API_URL
+- URL base untuk semua request API ke backend
+- Harus dimulai dengan `http://` atau `https://`
+- Contoh development: `http://localhost:8000/api`
+- Contoh production: `https://api.yourdomain.com/api`
 
-### Bookings
-- `POST /api/bookings` - Create booking
-- `GET /api/bookings/[id]` - Get booking detail
-- `POST /api/bookings/payment-proof` - Upload payment proof
+### NEXT_PUBLIC_APP_URL
+- URL frontend aplikasi
+- Digunakan untuk redirect, sharing links, dll
+- Contoh development: `http://localhost:3000`
+- Contoh production: `https://yourdomain.com`
 
-### Tenant Management
-- `GET /api/tenant/dashboard` - Dashboard stats
-- `GET /api/tenant/properties` - Get tenant properties
-- `POST /api/tenant/properties` - Add property
-- `GET /api/tenant/bookings` - Get bookings
-- `POST /api/tenant/bookings/[id]/confirm` - Confirm payment
-- `GET /api/tenant/reports` - Sales reports
+## Commands Tersedia
 
-## 🎯 Status Booking
+```bash
+# Development mode (hot reload)
+npm run dev
 
-1. **PENDING_PAYMENT** - Menunggu pembayaran (max 2 jam)
-2. **PAYMENT_CONFIRMED** - Bukti pembayaran uploaded
-3. **CONFIRMED** - Dikonfirmasi oleh tenant
-4. **CANCELLED** - Dibatalkan
-5. **COMPLETED** - Selesai (bisa review)
+# Build untuk production
+npm run build
 
-## 💡 Cara Menggunakan Aplikasi
+# Jalankan production build
+npm start
 
-### Sebagai User (Penyewa):
-1. Buka halaman utama
-2. Isi form pencarian (kota, tanggal, jumlah tamu)
-3. Browse hasil pencarian dengan filter
-4. Pilih properti dan lihat detail + kalender harga
-5. Pilih kamar dan buat booking
-6. Upload bukti pembayaran
-7. Tunggu konfirmasi dari tenant
-8. Berikan review setelah check-out
+# Linting
+npm run lint
+```
 
-### Sebagai Tenant (Pemilik):
-1. Register sebagai Tenant
-2. Login ke dashboard tenant
-3. Tambah properti dan kamar
-4. Atur price rules untuk tanggal khusus
-5. Kelola booking dari user
-6. Konfirmasi/tolak pembayaran
-7. Lihat laporan penjualan
-8. Response review dari user
+## Project Structure
 
-## 🛠️ Customization
+```
+finpro-feature2-fe/
+├── src/
+│   ├── app/              # Next.js pages & routes
+│   ├── components/       # Reusable components
+│   └── lib/             # Utilities & helpers
+├── public/              # Static assets
+├── .env.local          # Environment variables (gitignored)
+├── env.example         # Template environment variables
+├── next.config.ts      # Next.js configuration
+├── tailwind.config.js  # Tailwind CSS config
+└── package.json        # Dependencies
+```
 
-### Menambah Amenities Baru
-Edit file `src/components/PropertyForm.tsx` dan `src/components/SearchFilters.tsx`
+## Troubleshooting
 
-### Mengubah Validation Rules
-Edit file `src/lib/validation.ts`
+### Error: Cannot connect to backend
 
-### Menambah Payment Gateway
-Implementasi di `src/components/PaymentForm.tsx`
+**Penyebab**: Backend tidak berjalan atau URL salah
 
-### Email Notifications
-Setup SMTP di `.env.local` dan implementasi di API routes
+**Solusi**:
+1. Pastikan backend sudah running
+2. Cek `NEXT_PUBLIC_API_URL` di `.env.local`
+3. Test endpoint backend dengan browser/Postman
 
-## 📱 Testing
+### Error: CORS policy blocking
 
-### Test User Flow:
-1. Register sebagai USER
-2. Search properti
-3. Buat booking
-4. Upload bukti bayar
+**Penyebab**: Backend belum konfigurasi CORS
 
-### Test Tenant Flow:
-1. Register sebagai TENANT
-2. Login ke dashboard
-3. Tambah properti dan kamar
-4. Atur price rules
-5. Konfirmasi booking user
+**Solusi**: 
+Tambahkan CORS config di backend untuk allow origin dari `http://localhost:3000`
 
-## 🔒 Security Features
+### Error: Module not found
 
-- ✅ JWT Authentication
-- ✅ Role-based access control
-- ✅ Input validation (client & server)
-- ✅ File upload validation
-- ✅ SQL injection protection (Prisma)
-- ✅ XSS protection
+**Penyebab**: Dependencies belum terinstall
 
-## 📈 Performance Features
+**Solusi**:
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
 
-- ✅ Server-side pagination
-- ✅ Image optimization
-- ✅ Database indexing
-- ✅ Efficient queries dengan Prisma
-- ✅ Client-side caching
+### Port 3000 sudah digunakan
 
-## 🎨 UI/UX Features
+**Solusi**: Gunakan port lain
+```bash
+PORT=3001 npm run dev
+```
 
-- ✅ Responsive design (mobile-first)
-- ✅ Loading states
-- ✅ Error handling
-- ✅ Toast notifications
-- ✅ Modern design dengan Tailwind
-- ✅ Accessibility considerations
+## Development Tips
 
-Aplikasi sudah siap digunakan! 🎉
+### 1. Hot Reload
+File akan otomatis reload saat ada perubahan. Tidak perlu restart server.
+
+### 2. TypeScript Errors
+Jika ada TypeScript error, cek di terminal atau browser console.
+
+### 3. Styling dengan Tailwind
+Gunakan Tailwind CSS classes. Autocomplete akan muncul di VSCode jika install extension.
+
+### 4. Form Validation
+Validation sudah setup dengan Zod. Lihat `src/lib/validation.ts` untuk schema.
+
+### 5. API Calls
+Gunakan `src/lib/api.ts` untuk semua API requests:
+```typescript
+import { api } from '@/lib/api';
+const data = await api.get('/properties');
+```
+
+## Next Steps
+
+1. ✅ Setup selesai? Coba fitur login/register
+2. ✅ Test pencarian properti
+3. ✅ Test booking flow
+4. ✅ Mulai development fitur baru!
+
+## Deployment
+
+### Deploy ke Vercel (Recommended)
+
+1. Push code ke GitHub
+2. Import project di [Vercel](https://vercel.com)
+3. Set environment variables di Vercel dashboard
+4. Deploy!
+
+### Deploy Manual
+
+```bash
+npm run build
+npm start
+```
+
+## Support
+
+Jika ada masalah:
+1. Cek dokumentasi di README.md
+2. Cek backend logs
+3. Cek browser console untuk errors
+4. Contact team lead
+
+Happy coding! 🚀
+

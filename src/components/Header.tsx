@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { verifyToken } from '@/lib/auth'
+import { api, getAuthToken, removeAuthToken } from '@/lib/api'
 
 export function Header() {
   const [user, setUser] = useState<any>(null)
@@ -12,24 +12,34 @@ export function Header() {
 
   useEffect(() => {
     // Check if user is logged in
-    const token = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('auth-token='))
-      ?.split('=')[1]
+    const token = getAuthToken()
 
     if (token) {
-      const userData = verifyToken(token)
-      setUser(userData)
+      // Fetch user data from backend
+      api.get('/auth/me', token)
+        .then((userData) => setUser(userData))
+        .catch(() => {
+          // Token invalid, remove it
+          removeAuthToken()
+        })
     }
   }, [])
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' })
+      const token = getAuthToken()
+      if (token) {
+        await api.post('/auth/logout', {}, token)
+      }
+      removeAuthToken()
       setUser(null)
       router.push('/')
     } catch (error) {
       console.error('Logout error:', error)
+      // Remove token anyway
+      removeAuthToken()
+      setUser(null)
+      router.push('/')
     }
   }
 

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema } from '@/lib/validation'
+import { api, setAuthToken } from '@/lib/api'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 
@@ -30,28 +31,22 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
+      const result = await api.post<{ token: string; user: { role: string } }>('/auth/login', data)
 
-      const result = await response.json()
+      // Save token to localStorage
+      setAuthToken(result.token)
 
-      if (response.ok) {
-        // Redirect based on user role
-        if (result.user.role === 'TENANT') {
-          router.push('/tenant')
-        } else {
-          router.push('/')
-        }
+      // Redirect based on user role
+      if (result.user.role === 'TENANT') {
+        router.push('/tenant')
       } else {
-        setError(result.error || 'Login gagal')
+        router.push('/')
       }
-    } catch (error) {
-      setError('Terjadi kesalahan server')
+      
+      // Refresh page to update header
+      window.location.reload()
+    } catch (error: any) {
+      setError(error.message || 'Login gagal')
     } finally {
       setIsLoading(false)
     }

@@ -1,43 +1,42 @@
-# Property Renting Web App
+# Property Renting Web App - Frontend
 
-Aplikasi web untuk menyewakan properti dengan fitur perbandingan harga dinamis berdasarkan tanggal dan hari libur.
+Aplikasi frontend untuk sistem penyewaan properti menggunakan Next.js 15 dengan React 19.
 
-## Fitur Utama
+## Fitur Frontend
 
 ### Untuk User (Penyewa)
 - ✅ Pencarian properti berdasarkan destinasi, tanggal, dan jumlah tamu
 - ✅ Filter dan sorting properti (harga, rating, nama)
 - ✅ Perbandingan harga pada tanggal yang berbeda
 - ✅ Kalender harga dinamis
-- ✅ Sistem booking dengan upload bukti pembayaran
-- ✅ Riwayat pemesanan
-- ✅ Review dan rating properti
+- ✅ Form booking dengan upload bukti pembayaran
+- ✅ Halaman riwayat pemesanan
+- ✅ Form review dan rating properti
 
 ### Untuk Tenant (Pemilik)
 - ✅ Dashboard manajemen properti
-- ✅ Kelola ketersediaan kamar
-- ✅ Atur harga dinamis berdasarkan tanggal
-- ✅ Konfirmasi pembayaran manual
+- ✅ Form kelola ketersediaan kamar
+- ✅ Form atur harga dinamis berdasarkan tanggal
+- ✅ Halaman konfirmasi pembayaran
 - ✅ Laporan penjualan dan analisis
-- ✅ Notifikasi email otomatis
 
 ## Teknologi yang Digunakan
 
-- **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
-- **Backend**: Next.js API Routes, Prisma ORM
-- **Database**: PostgreSQL
-- **Authentication**: JWT dengan bcryptjs
-- **File Upload**: Multer
-- **Email**: Nodemailer
-- **Validation**: Zod
-- **Forms**: React Hook Form
+- **Framework**: Next.js 15
+- **UI Library**: React 19
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Forms**: React Hook Form + Zod Validation
+- **Date Handling**: date-fns, react-datepicker
+- **Utilities**: clsx, class-variance-authority, tailwind-merge
 
 ## Setup Development
 
 ### 1. Clone Repository
 ```bash
 git clone <repository-url>
-cd property-rent
+cd finpro-feature2-fe
 ```
 
 ### 2. Install Dependencies
@@ -45,115 +44,150 @@ cd property-rent
 npm install
 ```
 
-### 3. Setup Database
+### 3. Setup Environment Variables
 ```bash
 # Copy environment file
 cp env.example .env.local
 
-# Edit .env.local dengan konfigurasi database Anda
-# DATABASE_URL="postgresql://username:password@localhost:5432/property_rent"
-# JWT_SECRET="your-secret-key"
-
-# Generate Prisma client
-npx prisma generate
-
-# Run database migrations
-npx prisma db push
-
-# (Optional) Seed database dengan data sample
-npx prisma db seed
+# Edit .env.local dengan konfigurasi backend API Anda
+# NEXT_PUBLIC_API_URL="http://localhost:8000/api"
+# NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-### 4. Setup File Upload Directory
-```bash
-mkdir uploads
-mkdir uploads/properties
-mkdir uploads/payments
-```
-
-### 5. Run Development Server
+### 4. Run Development Server
 ```bash
 npm run dev
 ```
 
 Aplikasi akan berjalan di http://localhost:3000
 
-## Database Schema
+## Struktur Folder
 
-### Models Utama
-- **User**: Pengguna sistem (USER/TENANT/ADMIN)
-- **Tenant**: Profil pemilik properti
-- **Property**: Data properti yang disewakan
-- **Room**: Kamar/ruangan dalam properti
-- **Booking**: Pemesanan penginapan
-- **Review**: Ulasan dan rating
-- **PriceRule**: Aturan harga dinamis
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── page.tsx           # Homepage
+│   ├── login/             # Halaman login
+│   ├── register/          # Halaman registrasi
+│   ├── search/            # Halaman pencarian properti
+│   ├── property/[id]/     # Detail properti
+│   ├── booking/[id]/      # Detail & konfirmasi booking
+│   ├── user/              # Dashboard user
+│   └── tenant/            # Dashboard tenant
+├── components/            # Reusable React components
+│   ├── Button.tsx
+│   ├── Input.tsx
+│   ├── Card.tsx
+│   ├── Modal.tsx
+│   ├── PropertyCard.tsx
+│   ├── BookingForm.tsx
+│   ├── SearchFilters.tsx
+│   └── ...
+└── lib/                   # Utility functions
+    ├── api.ts            # API client untuk backend
+    ├── utils.ts          # Helper functions
+    └── validation.ts     # Zod schemas
 
-### Status Booking
-- `PENDING_PAYMENT`: Menunggu pembayaran
-- `PAYMENT_CONFIRMED`: Pembayaran dikonfirmasi
-- `CONFIRMED`: Dikonfirmasi
-- `CANCELLED`: Dibatalkan
-- `COMPLETED`: Selesai
+```
 
-## API Endpoints
+## API Integration
 
-### Authentication
-- `POST /api/auth/register` - Registrasi user/tenant
-- `POST /api/auth/login` - Login
-- `POST /api/auth/logout` - Logout
+Frontend ini berkomunikasi dengan backend melalui REST API. Semua request API ditangani oleh `src/lib/api.ts`.
 
-### Properties
-- `GET /api/properties/search` - Pencarian properti
-- `GET /api/properties/[id]` - Detail properti
-- `GET /api/properties/[id]/prices` - Harga dinamis
+### Contoh Penggunaan API Client
 
-### Bookings
-- `POST /api/bookings` - Buat pemesanan
-- `GET /api/bookings/[id]` - Detail pemesanan
-- `POST /api/bookings/payment-proof` - Upload bukti pembayaran
+```typescript
+import { api, getAuthToken } from '@/lib/api';
 
-### Tenant Management
-- `GET /api/tenant/dashboard` - Dashboard stats
-- `GET /api/tenant/properties` - Daftar properti tenant
-- `POST /api/tenant/properties` - Tambah properti
-- `GET /api/tenant/bookings` - Daftar pemesanan
+// GET request
+const properties = await api.get('/properties/search?city=Jakarta');
 
-## Fitur Khusus
+// POST request dengan authentication
+const token = getAuthToken();
+const booking = await api.post('/bookings', {
+  propertyId: '123',
+  checkIn: '2024-01-01',
+  checkOut: '2024-01-05'
+}, token);
 
-### Harga Dinamis
-- Harga berubah otomatis berdasarkan hari libur
-- Tenant dapat mengatur aturan harga khusus
-- Perhitungan harga real-time pada kalender
+// Upload file
+const formData = new FormData();
+formData.append('file', file);
+const result = await api.upload('/bookings/payment-proof', formData, token);
+```
 
-### Sistem Pembayaran
-- Upload bukti transfer manual
-- Validasi file (JPG/PNG, max 1MB)
-- Konfirmasi pembayaran oleh tenant
-- Notifikasi email otomatis
+## Environment Variables
 
-### Responsive Design
-- Mobile-first approach
-- Optimized untuk semua device
-- Touch-friendly interface
+Buat file `.env.local` dengan isi:
+
+```env
+# Backend API URL
+NEXT_PUBLIC_API_URL="http://localhost:8000/api"
+
+# Frontend App URL
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+## Build untuk Production
+
+```bash
+# Build aplikasi
+npm run build
+
+# Jalankan production build
+npm start
+```
 
 ## Deployment
 
-### Environment Variables
-```env
-DATABASE_URL="your-postgresql-connection-string"
-JWT_SECRET="your-jwt-secret"
-SMTP_HOST="your-smtp-host"
-SMTP_USER="your-email"
-SMTP_PASS="your-password"
-NEXT_PUBLIC_APP_URL="your-app-url"
-```
+### Vercel (Recommended)
+1. Push code ke GitHub
+2. Import project di Vercel
+3. Set environment variables
+4. Deploy
 
-### Build untuk Production
+### Deployment Manual
 ```bash
 npm run build
 npm start
 ```
+
+## Fitur Khusus Frontend
+
+### Responsive Design
+- Mobile-first approach
+- Optimized untuk semua device (mobile, tablet, desktop)
+- Touch-friendly interface
+
+### Form Validation
+- Client-side validation menggunakan Zod
+- Real-time error feedback
+- User-friendly error messages
+
+### Image Optimization
+- Next.js Image component untuk lazy loading
+- Support remote images dari backend
+
+### State Management
+- React hooks untuk local state
+- LocalStorage untuk authentication token
+
+## Development Tips
+
+### Adding New Pages
+```bash
+# Buat file baru di src/app/
+src/app/new-page/page.tsx
+```
+
+### Adding New Components
+```bash
+# Buat file baru di src/components/
+src/components/NewComponent.tsx
+```
+
+### Testing API Endpoints
+Gunakan browser DevTools Network tab untuk melihat request/response API.
 
 ## Kontribusi
 
@@ -163,11 +197,23 @@ npm start
 4. Push ke branch (`git push origin feature/AmazingFeature`)
 5. Buat Pull Request
 
+## Troubleshooting
+
+### Error: Cannot connect to backend
+- Pastikan backend sudah berjalan
+- Cek `NEXT_PUBLIC_API_URL` di `.env.local`
+- Cek CORS configuration di backend
+
+### Error: Image not loading
+- Pastikan URL gambar benar
+- Cek `next.config.ts` untuk image domains
+
 ## Lisensi
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License.
 
 ## Kontak
 
 - Email: your-email@example.com
-- Project Link: [https://github.com/your-username/property-rent](https://github.com/your-username/property-rent)"# finpro-feature2-fe" 
+- Project Link: [https://github.com/your-username/finpro-feature2-fe](https://github.com/your-username/finpro-feature2-fe)
+
