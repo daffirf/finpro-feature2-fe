@@ -43,12 +43,12 @@ export function Header() {
   }
 
   return (
-    <header className="bg-white/95 backdrop-blur-md shadow-soft sticky top-0 z-50 border-b border-gray-100">
+    <header className="bg-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-soft group-hover:shadow-glow transition-all duration-300 group-hover:scale-105">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
@@ -62,24 +62,21 @@ export function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               href="/" 
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300"
             >
               Beranda
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
             </Link>
             <Link 
               href="/search" 
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300"
             >
               Cari Penginapan
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
             </Link>
             <Link 
               href="/about" 
-              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300"
             >
               Tentang Kami
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
             </Link>
           </nav>
 
@@ -105,7 +102,7 @@ export function Header() {
                   </button>
                   
                   {/* Dropdown Menu */}
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-strong border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                     <div className="py-2">
                       <Link href="/user/bookings" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                         Booking Saya
@@ -135,7 +132,7 @@ export function Header() {
                 </Link>
                 <Link
                   href="/register"
-                  className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-glow transition-all duration-300 hover:scale-105"
+                  className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   Daftar
                 </Link>
@@ -162,7 +159,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100 animate-slide-up">
+          <div className="md:hidden py-4 border-t border-gray-100">
             <nav className="flex flex-col space-y-4">
               <Link
                 href="/"
