@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { suppressHydrationWarning } from "react";
 
 export const metadata: Metadata = {
   title: "PropertyRent - Platform Sewa Penginapan Terbaik",
@@ -21,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning={true}>
         {children}
       </body>
     </html>
