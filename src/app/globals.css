@@ -8,7 +8,8 @@
 }
 
 body {
-  @apply bg-white text-gray-900;
+  background-color: #ffffff;
+  color: #111827;
 }
 
 @layer utilities {
