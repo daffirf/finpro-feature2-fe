@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { suppressHydrationWarning } from "react";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "PropertyRent - Platform Sewa Penginapan Terbaik",
@@ -21,8 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body className="antialiased" suppressHydrationWarning={true}>
+    <html lang="id" className={inter.className}>
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="manifest" href="/site.webmanifest" />
+      </head>
+      <body className={inter.className} suppressHydrationWarning={true}>
         {children}
       </body>
     </html>
