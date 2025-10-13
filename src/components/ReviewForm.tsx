@@ -7,11 +7,10 @@ import { createReviewSchema } from '@/lib/validation'
 
 interface ReviewFormProps {
   bookingId: string
-  propertyId: string
   onSuccess: () => void
 }
 
-export function ReviewForm({ bookingId, propertyId, onSuccess }: ReviewFormProps) {
+export function ReviewForm({ bookingId, onSuccess }: ReviewFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
@@ -35,7 +34,7 @@ export function ReviewForm({ bookingId, propertyId, onSuccess }: ReviewFormProps
 
   const watchedRating = watch('rating')
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: { bookingId: string; rating: number; comment: string }) => {
     setIsLoading(true)
     setError('')
 
@@ -58,7 +57,7 @@ export function ReviewForm({ bookingId, propertyId, onSuccess }: ReviewFormProps
       } else {
         setError(result.error || 'Gagal menambahkan review')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)

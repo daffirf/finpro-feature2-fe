@@ -26,7 +26,7 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema)
   })
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: { email: string; password: string }) => {
     setIsLoading(true)
     setError('')
 
@@ -45,8 +45,8 @@ export default function LoginPage() {
       
       // Refresh page to update header
       window.location.reload()
-    } catch (error: any) {
-      setError(error.message || 'Login gagal')
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Login gagal')
     } finally {
       setIsLoading(false)
     }

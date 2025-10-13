@@ -35,7 +35,7 @@ export function SearchForm({ onSubmit }: SearchFormProps) {
 
   const watchedGuests = watch('guests')
 
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = async (data: { city: string; checkIn: string; checkOut: string; guests: number }) => {
     setIsLoading(true)
     try {
       onSubmit(data)

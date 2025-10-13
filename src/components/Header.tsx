@@ -5,8 +5,15 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { api, getAuthToken, removeAuthToken } from '@/lib/api'
 
+interface User {
+  id: string
+  name: string
+  email: string
+  role: 'USER' | 'TENANT'
+}
+
 export function Header() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
 
@@ -16,7 +23,7 @@ export function Header() {
 
     if (token) {
       // Fetch user data from backend
-      api.get('/auth/me', token)
+      api.get<User>('/auth/me', token)
         .then((userData) => setUser(userData))
         .catch(() => {
           // Token invalid, remove it

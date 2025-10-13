@@ -34,9 +34,7 @@ export default function RegisterPage() {
     }
   })
 
-  const watchedRole = watch('role')
-
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: { name: string; email: string; password: string; phone?: string; role: 'USER' | 'TENANT' }) => {
     setIsLoading(true)
     setError('')
 
@@ -46,8 +44,8 @@ export default function RegisterPage() {
       setTimeout(() => {
         router.push('/login')
       }, 2000)
-    } catch (error: any) {
-      setError(error.message || 'Registrasi gagal')
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Registrasi gagal')
     } finally {
       setIsLoading(false)
     }

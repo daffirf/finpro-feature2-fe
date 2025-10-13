@@ -33,7 +33,7 @@ export function RoomForm({ propertyId, onSuccess, onCancel }: RoomFormProps) {
     }
   })
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: { propertyId: string; name: string; description?: string; capacity: number; basePrice: number; images?: string[] }) => {
     setIsLoading(true)
     setError('')
 
@@ -53,7 +53,7 @@ export function RoomForm({ propertyId, onSuccess, onCancel }: RoomFormProps) {
       } else {
         setError(result.error || 'Gagal menambahkan kamar')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)

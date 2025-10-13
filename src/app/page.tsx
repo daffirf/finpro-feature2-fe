@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { SearchForm } from '@/components/SearchForm'
 import { Header } from '@/components/Header'

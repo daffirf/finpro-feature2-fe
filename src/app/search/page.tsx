@@ -6,7 +6,6 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { PropertyCard } from '@/components/PropertyCard'
 import { SearchFilters } from '@/components/SearchFilters'
-import { formatCurrency } from '@/lib/utils'
 
 interface Property {
   id: string
@@ -76,14 +75,14 @@ export default function SearchPage() {
       } else {
         setError(data.error || 'Gagal memuat properti')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleFilterChange = (newFilters: any) => {
+  const handleFilterChange = (newFilters: Partial<{ sortBy: string; minPrice: string; maxPrice: string; amenities: string[] }>) => {
     setFilters(prev => ({ ...prev, ...newFilters }))
   }
 

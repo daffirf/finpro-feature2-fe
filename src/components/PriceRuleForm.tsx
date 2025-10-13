@@ -19,7 +19,7 @@ interface PriceRuleFormProps {
   onCancel: () => void
 }
 
-export function PriceRuleForm({ propertyId, onSuccess, onCancel }: PriceRuleFormProps) {
+export function PriceRuleForm({ onSuccess, onCancel }: PriceRuleFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -43,7 +43,7 @@ export function PriceRuleForm({ propertyId, onSuccess, onCancel }: PriceRuleForm
 
   const watchedPriceType = watch('priceType')
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: { name: string; startDate: string; endDate: string; priceType: 'PERCENTAGE' | 'FIXED'; value: number }) => {
     setIsLoading(true)
     setError('')
 
@@ -63,7 +63,7 @@ export function PriceRuleForm({ propertyId, onSuccess, onCancel }: PriceRuleForm
       } else {
         setError(result.error || 'Gagal menambahkan aturan harga')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)

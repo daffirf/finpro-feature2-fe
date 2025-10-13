@@ -78,7 +78,7 @@ export function BookingForm({ propertyId, roomId, searchData }: BookingFormProps
     }
   }
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: { propertyId: string; roomId: string; checkIn: string; checkOut: string; guests: number; notes?: string }) => {
     setIsLoading(true)
     setError('')
 
@@ -101,7 +101,7 @@ export function BookingForm({ propertyId, roomId, searchData }: BookingFormProps
       } else {
         setError(result.error || 'Gagal membuat pemesanan')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)

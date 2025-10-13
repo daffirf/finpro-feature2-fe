@@ -15,11 +15,7 @@ export function PaymentForm({ bookingId, onSuccess }: PaymentFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm()
+  const { handleSubmit } = useForm()
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -39,7 +35,7 @@ export function PaymentForm({ bookingId, onSuccess }: PaymentFormProps) {
     }
   }
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async () => {
     if (!selectedFile) {
       setError('Pilih file bukti pembayaran')
       return
@@ -65,7 +61,7 @@ export function PaymentForm({ bookingId, onSuccess }: PaymentFormProps) {
       } else {
         setError(result.error || 'Gagal mengupload bukti pembayaran')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)

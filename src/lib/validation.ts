@@ -59,6 +59,15 @@ export const createReviewSchema = z.object({
   comment: z.string().min(10, 'Komentar minimal 10 karakter')
 })
 
+// Price rule schemas
+export const priceRuleSchema = z.object({
+  name: z.string().min(2, 'Nama aturan minimal 2 karakter'),
+  startDate: z.string().min(1, 'Tanggal mulai harus diisi'),
+  endDate: z.string().min(1, 'Tanggal selesai harus diisi'),
+  priceType: z.enum(['PERCENTAGE', 'FIXED']),
+  value: z.number().positive('Nilai harus positif')
+})
+
 // File upload validation
 export const fileUploadSchema = z.object({
   file: z.instanceof(File, { message: 'File harus diupload' }),

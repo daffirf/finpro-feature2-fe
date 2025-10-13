@@ -2,14 +2,16 @@
 
 import { useState } from 'react'
 
+interface Filters {
+  sortBy: string
+  minPrice: string
+  maxPrice: string
+  amenities: string[]
+}
+
 interface SearchFiltersProps {
-  filters: {
-    sortBy: string
-    minPrice: string
-    maxPrice: string
-    amenities: string[]
-  }
-  onFilterChange: (filters: any) => void
+  filters: Filters
+  onFilterChange: (filters: Partial<Filters>) => void
 }
 
 const amenitiesOptions = [

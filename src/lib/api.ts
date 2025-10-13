@@ -17,9 +17,9 @@ async function apiRequest<T>(
 ): Promise<T> {
   const { token, ...fetchOptions } = options;
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...fetchOptions.headers,
+    ...(fetchOptions.headers as Record<string, string>),
   };
 
   // Tambahkan Authorization header jika ada token
@@ -50,7 +50,7 @@ export const api = {
     apiRequest<T>(endpoint, { method: 'GET', token }),
 
   // POST request
-  post: <T>(endpoint: string, body?: any, token?: string) =>
+  post: <T>(endpoint: string, body?: unknown, token?: string) =>
     apiRequest<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(body),
@@ -58,7 +58,7 @@ export const api = {
     }),
 
   // PUT request
-  put: <T>(endpoint: string, body?: any, token?: string) =>
+  put: <T>(endpoint: string, body?: unknown, token?: string) =>
     apiRequest<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(body),
@@ -66,7 +66,7 @@ export const api = {
     }),
 
   // PATCH request
-  patch: <T>(endpoint: string, body?: any, token?: string) =>
+  patch: <T>(endpoint: string, body?: unknown, token?: string) =>
     apiRequest<T>(endpoint, {
       method: 'PATCH',
       body: JSON.stringify(body),
@@ -83,7 +83,7 @@ export const api = {
     formData: FormData,
     token?: string
   ): Promise<T> => {
-    const headers: HeadersInit = {};
+    const headers: Record<string, string> = {};
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

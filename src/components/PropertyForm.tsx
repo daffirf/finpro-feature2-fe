@@ -19,7 +19,15 @@ export function PropertyForm({ onSuccess, onCancel }: PropertyFormProps) {
     handleSubmit,
     formState: { errors },
     watch
-  } = useForm({
+  } = useForm<{
+    name: string
+    description: string
+    address: string
+    city: string
+    basePrice: number
+    amenities?: string[]
+    images?: string[]
+  }>({
     resolver: zodResolver(createPropertySchema)
   })
 
@@ -43,7 +51,7 @@ export function PropertyForm({ onSuccess, onCancel }: PropertyFormProps) {
     'Teras'
   ]
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: { name: string; description: string; address: string; city: string; basePrice: number; amenities?: string[]; images?: string[] }) => {
     setIsLoading(true)
     setError('')
 
@@ -63,7 +71,7 @@ export function PropertyForm({ onSuccess, onCancel }: PropertyFormProps) {
       } else {
         setError(result.error || 'Gagal menambahkan properti')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)
