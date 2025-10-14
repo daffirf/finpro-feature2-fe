@@ -17,15 +17,17 @@ interface SearchFormProps {
 export function SearchForm({ onSubmit }: SearchFormProps) {
   const [guests, setGuests] = useState(2)
 
+  type FormValues = { city: string; checkIn: string; checkOut: string }
+
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm({
+  } = useForm<FormValues>({
     resolver: zodResolver(searchSchema)
   })
 
-  const handleFormSubmit = (data: { city: string; checkIn: string; checkOut: string }) => {
+  const handleFormSubmit = (data: FormValues) => {
     onSubmit({
       ...data,
       guests

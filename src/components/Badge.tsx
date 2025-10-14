@@ -1,13 +1,13 @@
 import { cn } from '@/lib/utils'
 
-interface BadgeProps {
+interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   children: React.ReactNode
   variant?: 'default' | 'success' | 'warning' | 'error' | 'info'
   size?: 'sm' | 'md' | 'lg'
   className?: string
 }
 
-export function Badge({ children, variant = 'default', size = 'md', className }: BadgeProps) {
+export function Badge({ children, variant = 'default', size = 'md', className, ...props }: BadgeProps) {
   const baseClasses = 'inline-flex items-center font-medium rounded-full'
   
   const variantClasses = {
@@ -32,6 +32,7 @@ export function Badge({ children, variant = 'default', size = 'md', className }:
         sizeClasses[size],
         className
       )}
+      {...props}
     >
       {children}
     </span>

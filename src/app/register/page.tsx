@@ -6,15 +6,14 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { registerSchema } from '@/lib/validation'
-import { api } from '@/lib/api'
+import { useRegister } from '@/hooks/auth'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 
 export default function RegisterPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const router = useRouter()
+  const { register: registerUser, isLoading, error } = useRegister()
 
   const {
     register,
@@ -35,19 +34,18 @@ export default function RegisterPage() {
   })
 
   const onSubmit = async (data: { name: string; email: string; password: string; phone?: string; role: 'USER' | 'TENANT' }) => {
-    setIsLoading(true)
-    setError('')
-
     try {
-      await api.post('/auth/register', data)
+      await registerUser({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+        role: data.role
+      })
       setSuccess(true)
-      setTimeout(() => {
-        router.push('/login')
-      }, 2000)
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Registrasi gagal')
-    } finally {
-      setIsLoading(false)
+      // Error is handled by the hook
+      console.error('Registration error:', error)
     }
   }
 

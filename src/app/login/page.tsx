@@ -6,14 +6,13 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema } from '@/lib/validation'
-import { api, setAuthToken } from '@/lib/api'
+import { useLogin } from '@/hooks/auth'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
   const router = useRouter()
+  const { login, isLoading, error } = useLogin()
 
   const {
     register,
@@ -27,28 +26,11 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data: { email: string; password: string }) => {
-    setIsLoading(true)
-    setError('')
-
     try {
-      const result = await api.post<{ token: string; user: { role: string } }>('/auth/login', data)
-
-      // Save token to localStorage
-      setAuthToken(result.token)
-
-      // Redirect based on user role
-      if (result.user.role === 'TENANT') {
-        router.push('/tenant')
-      } else {
-        router.push('/')
-      }
-      
-      // Refresh page to update header
-      window.location.reload()
+      await login(data)
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Login gagal')
-    } finally {
-      setIsLoading(false)
+      // Error is handled by the hook
+      console.error('Login error:', error)
     }
   }
 
