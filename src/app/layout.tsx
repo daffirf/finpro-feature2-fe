@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { suppressHydrationWarning } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,7 +28,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className={inter.className} suppressHydrationWarning={true}>
+      <body className={inter.className} suppressHydrationWarning>
         {children}
       </body>
     </html>

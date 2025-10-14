@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { validateFile } from '@/lib/validation'
 
@@ -14,8 +14,40 @@ export function PaymentForm({ bookingId, onSuccess }: PaymentFormProps) {
   const [error, setError] = useState('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null)
 
   const { handleSubmit } = useForm()
+
+  // Timeout handling - 1 hour (3600 seconds)
+  useEffect(() => {
+    const fetchBookingTimeout = async () => {
+      try {
+        const response = await fetch(`/api/bookings/${bookingId}/timeout`)
+        const data = await response.json()
+        
+        if (response.ok && data.timeRemaining) {
+          setTimeRemaining(data.timeRemaining)
+          
+          const timer = setInterval(() => {
+            setTimeRemaining(prev => {
+              if (prev === null || prev <= 0) {
+                clearInterval(timer)
+                setError('Waktu upload bukti pembayaran telah habis. Pemesanan akan dibatalkan secara otomatis.')
+                return 0
+              }
+              return prev - 1
+            })
+          }, 1000)
+          
+          return () => clearInterval(timer)
+        }
+      } catch (error) {
+        console.error('Error fetching timeout info:', error)
+      }
+    }
+
+    fetchBookingTimeout()
+  }, [bookingId])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -76,8 +108,36 @@ export function PaymentForm({ bookingId, onSuccess }: PaymentFormProps) {
     }
   }
 
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Timeout Warning */}
+      {timeRemaining !== null && timeRemaining > 0 && (
+        <div className={`border rounded-lg p-4 ${
+          timeRemaining < 300 
+            ? 'bg-red-50 border-red-200 text-red-700' 
+            : 'bg-yellow-50 border-yellow-200 text-yellow-700'
+        }`}>
+          <div className="flex items-center space-x-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="font-medium">
+              Waktu tersisa untuk upload bukti pembayaran: {formatTime(timeRemaining)}
+            </span>
+          </div>
+          <p className="text-sm mt-1">
+            Jika tidak diupload dalam waktu yang tersisa, pemesanan akan dibatalkan secara otomatis.
+          </p>
+        </div>
+      )}
+
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
           {error}

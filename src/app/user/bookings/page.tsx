@@ -29,15 +29,23 @@ export default function UserBookingsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [dateFilter, setDateFilter] = useState('')
 
   useEffect(() => {
     fetchBookings()
-  }, [filter])
+  }, [filter, searchTerm, dateFilter]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchBookings = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/user/bookings?status=${filter}`)
+      const params = new URLSearchParams({
+        status: filter,
+        ...(searchTerm && { search: searchTerm }),
+        ...(dateFilter && { date: dateFilter })
+      })
+      
+      const response = await fetch(`/api/user/bookings?${params}`)
       const data = await response.json()
       
       if (response.ok) {
@@ -45,7 +53,7 @@ export default function UserBookingsPage() {
       } else {
         setError(data.error || 'Gagal memuat pemesanan')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)
@@ -97,23 +105,71 @@ export default function UserBookingsPage() {
             <p className="text-gray-600">Kelola dan lihat riwayat pemesanan Anda</p>
           </div>
 
-          {/* Filter */}
+          {/* Search and Filter */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div className="flex items-center space-x-4">
-              <label className="text-sm font-medium text-gray-700">Filter Status:</label>
-              <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">Semua Status</option>
-                <option value="PENDING_PAYMENT">Menunggu Pembayaran</option>
-                <option value="PAYMENT_CONFIRMED">Pembayaran Dikonfirmasi</option>
-                <option value="CONFIRMED">Dikonfirmasi</option>
-                <option value="COMPLETED">Selesai</option>
-                <option value="CANCELLED">Dibatalkan</option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Search by Order Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Cari No. Order
+                </label>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Masukkan nomor order..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Filter by Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Filter Tanggal
+                </label>
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Filter by Status */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Filter Status
+                </label>
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="all">Semua Status</option>
+                  <option value="PENDING_PAYMENT">Menunggu Pembayaran</option>
+                  <option value="PAYMENT_CONFIRMED">Pembayaran Dikonfirmasi</option>
+                  <option value="CONFIRMED">Dikonfirmasi</option>
+                  <option value="COMPLETED">Selesai</option>
+                  <option value="CANCELLED">Dibatalkan</option>
+                </select>
+              </div>
             </div>
+
+            {/* Clear Filters */}
+            {(searchTerm || dateFilter || filter !== 'all') && (
+              <div className="mt-4">
+                <button
+                  onClick={() => {
+                    setSearchTerm('')
+                    setDateFilter('')
+                    setFilter('all')
+                  }}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                  Hapus Semua Filter
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Bookings List */}

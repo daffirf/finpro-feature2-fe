@@ -19,8 +19,7 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    watch
+    formState: { errors }
   } = useForm<{
     name: string
     email: string
