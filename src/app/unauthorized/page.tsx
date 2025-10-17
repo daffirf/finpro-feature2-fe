@@ -31,7 +31,7 @@ export default function UnauthorizedPage() {
             
             <div>
               <Link
-                href="/login"
+                href="/auth/login"
                 className="text-blue-600 hover:text-blue-700 font-medium"
               >
                 Login dengan akun lain

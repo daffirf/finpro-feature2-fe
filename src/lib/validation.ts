@@ -2,7 +2,9 @@ import { z } from 'zod'
 
 // Auth schemas
 export const registerSchema = z.object({
-  name: z.string().min(2, 'Nama minimal 2 karakter'),
+  name: z.string()
+    .min(2, 'Nama minimal 2 karakter')
+    .max(50, 'Nama maksimal 50 karakter'),
   email: z.string().email('Email tidak valid'),
   password: z.string().min(6, 'Password minimal 6 karakter'),
   phone: z.string().optional(),
@@ -11,78 +13,103 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
   email: z.string().email('Email tidak valid'),
-  password: z.string().min(1, 'Password harus diisi')
+  password: z.string().min(6, 'Password minimal 6 karakter'),
 })
 
-// Property schemas
-export const createPropertySchema = z.object({
-  name: z.string().min(2, 'Nama properti minimal 2 karakter'),
+export const forgotPasswordSchema = z.object({
+  email: z.string().email('Email tidak valid'),
+})
+
+export const resetPasswordSchema = z.object({
+  password: z.string().min(6, 'Password minimal 6 karakter'),
+  confirmPassword: z.string().min(6, 'Konfirmasi password minimal 6 karakter'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Password tidak cocok',
+  path: ['confirmPassword'],
+})
+
+// User profile schemas
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, 'Nama minimal 2 karakter'),
+  phone: z.string().optional().or(z.literal('')),
+})
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(6, 'Password saat ini minimal 6 karakter'),
+  newPassword: z.string().min(6, 'Password baru minimal 6 karakter'),
+  confirmPassword: z.string().min(6, 'Konfirmasi password minimal 6 karakter'),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: 'Password baru tidak cocok',
+  path: ['confirmPassword'],
+}).refine((data) => data.currentPassword !== data.newPassword, {
+  message: 'Password baru harus berbeda dari password saat ini',
+  path: ['newPassword'],
+})
+
+// Booking schema
+export const bookingSchema = z.object({
+  propertyId: z.string(),
+  roomId: z.string(),
+  checkIn: z.string(),
+  checkOut: z.string(),
+  guests: z.number().min(1, 'Minimal 1 tamu'),
+})
+
+// Property schema
+export const propertySchema = z.object({
+  name: z.string().min(3, 'Nama properti minimal 3 karakter'),
   description: z.string().min(10, 'Deskripsi minimal 10 karakter'),
   address: z.string().min(5, 'Alamat minimal 5 karakter'),
   city: z.string().min(2, 'Kota minimal 2 karakter'),
-  basePrice: z.number().positive('Harga harus positif'),
-  amenities: z.array(z.string()).optional(),
-  images: z.array(z.string()).optional()
+  category: z.string(),
+  facilities: z.array(z.string()).optional(),
 })
 
-export const createRoomSchema = z.object({
-  propertyId: z.string().min(1, 'Property ID harus diisi'),
-  name: z.string().min(2, 'Nama kamar minimal 2 karakter'),
-  description: z.string().optional(),
-  capacity: z.number().int().positive('Kapasitas harus positif'),
-  basePrice: z.number().positive('Harga harus positif'),
-  images: z.array(z.string()).optional()
+// Room schema
+export const roomSchema = z.object({
+  name: z.string().min(3, 'Nama ruangan minimal 3 karakter'),
+  capacity: z.number().min(1, 'Kapasitas minimal 1 orang'),
+  basePrice: z.number().min(0, 'Harga tidak boleh negatif'),
 })
 
-// Booking schemas
-export const createBookingSchema = z.object({
-  propertyId: z.string().min(1, 'Property ID harus diisi'),
-  roomId: z.string().min(1, 'Room ID harus diisi'),
-  checkIn: z.string().datetime('Tanggal check-in tidak valid'),
-  checkOut: z.string().datetime('Tanggal check-out tidak valid'),
-  guests: z.number().int().positive('Jumlah tamu harus positif'),
-  notes: z.string().optional()
-})
-
-// Search schemas
+// Search schema
 export const searchSchema = z.object({
-  city: z.string().min(1, 'Kota harus diisi'),
-  checkIn: z.string().datetime('Tanggal check-in tidak valid'),
-  checkOut: z.string().datetime('Tanggal check-out tidak valid'),
-  guests: z.number().int().positive('Jumlah tamu harus positif')
+  location: z.string().optional(),
+  checkIn: z.string().optional(),
+  checkOut: z.string().optional(),
+  guests: z.number().optional(),
+  category: z.string().optional(),
+  minPrice: z.number().optional(),
+  maxPrice: z.number().optional(),
 })
 
-// Review schemas
-export const createReviewSchema = z.object({
-  bookingId: z.string().min(1, 'Booking ID harus diisi'),
-  rating: z.number().int().min(1).max(5, 'Rating harus 1-5'),
-  comment: z.string().min(10, 'Komentar minimal 10 karakter')
+// Review schema
+export const reviewSchema = z.object({
+  rating: z.number().min(1, 'Rating minimal 1').max(5, 'Rating maksimal 5'),
+  comment: z.string().min(10, 'Komentar minimal 10 karakter').optional(),
 })
 
-// Price rule schemas
+// Price rule schema
 export const priceRuleSchema = z.object({
-  name: z.string().min(2, 'Nama aturan minimal 2 karakter'),
-  startDate: z.string().min(1, 'Tanggal mulai harus diisi'),
-  endDate: z.string().min(1, 'Tanggal selesai harus diisi'),
-  priceType: z.enum(['PERCENTAGE', 'FIXED']),
-  value: z.number().positive('Nilai harus positif')
+  roomId: z.string(),
+  startDate: z.string(),
+  endDate: z.string(),
+  adjustmentType: z.enum(['PERCENTAGE', 'FIXED']),
+  adjustmentValue: z.number(),
 })
 
-// File upload validation
-export const fileUploadSchema = z.object({
-  file: z.instanceof(File, { message: 'File harus diupload' }),
-  maxSize: z.number().default(1024 * 1024), // 1MB
-  allowedTypes: z.array(z.string()).default(['image/jpeg', 'image/png'])
-})
-
-export function validateFile(file: File, maxSize: number = 1024 * 1024, allowedTypes: string[] = ['image/jpeg', 'image/png']): { valid: boolean; error?: string } {
+// File validation function
+export const validateFile = (file: File): { valid: boolean; error?: string } => {
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+  
   if (file.size > maxSize) {
-    return { valid: false, error: 'Ukuran file terlalu besar (maksimal 1MB)' }
+    return { valid: false, error: 'Ukuran file maksimal 5MB' };
   }
   
   if (!allowedTypes.includes(file.type)) {
-    return { valid: false, error: 'Tipe file tidak didukung (hanya JPG/PNG)' }
+    return { valid: false, error: 'Tipe file harus JPG, PNG, GIF, atau PDF' };
   }
   
-  return { valid: true }
+  return { valid: true };
 }

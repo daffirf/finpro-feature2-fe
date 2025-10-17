@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createBookingSchema } from '@/lib/validation'
+import { bookingSchema } from '@/lib/validation'
 import { formatCurrency, calculateDaysBetween } from '@/lib/utils'
 
 interface BookingFormProps {
@@ -38,7 +38,7 @@ export function BookingForm({ propertyId, roomId, searchData }: BookingFormProps
     guests: number
     notes?: string
   }>({
-    resolver: zodResolver(createBookingSchema),
+    resolver: zodResolver(bookingSchema),
     defaultValues: {
       propertyId,
       roomId,

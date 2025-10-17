@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { api, setAuthToken } from '@/lib/api';
 
 export interface RegisterCredentials {
   name: string;
@@ -19,44 +20,56 @@ export function useRegister() {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: credentials.name,
-          email: credentials.email,
-          password: credentials.password,
-          phone: credentials.phone,
-          role: credentials.role || 'USER',
-        }),
+      // Register user - backend expects phoneNumber not phone
+      const registerData = await api.post<{
+        id: number;
+        name: string;
+        email: string;
+        role: string;
+        phoneNumber?: string;
+      }>('/auth/register', {
+        name: credentials.name,
+        email: credentials.email,
+        password: credentials.password,
+        phoneNumber: credentials.phone, // Backend expects phoneNumber
+        role: (credentials.role || 'USER').toLowerCase(),
       });
 
-      const data = await response.json();
+      // Auto-login after successful registration
+      const loginData = await api.post<{
+        token: string;
+        user: {
+          id: number;
+          name: string;
+          email: string;
+          role: string;
+        };
+      }>('/auth/login', {
+        email: credentials.email,
+        password: credentials.password,
+      });
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      // Store token and user data if auto-login is enabled
-      if (data.token) {
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+      // Store token and user data
+      if (loginData.token) {
+        setAuthToken(loginData.token);
+        localStorage.setItem('user', JSON.stringify(loginData.user));
+        // Trigger custom event for header update
+        window.dispatchEvent(new CustomEvent('authChange'));
       }
 
       // Redirect based on user role
-      if (data.user?.role === 'TENANT') {
-        router.push('/tenant');
-      } else if (data.user?.role === 'ADMIN') {
-        router.push('/admin');
+      const userRole = loginData.user?.role?.toLowerCase();
+      if (userRole === 'user') {
+        router.push('/landing');
+      } else if (userRole === 'tenant') {
+        router.push('/dashboard');
       } else {
-        router.push('/search');
+        router.push('/landing');
       }
 
-      return data;
+      return { register: registerData, login: loginData };
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+      const errorMessage = err instanceof Error ? err.message : 'Registrasi gagal';
       setError(errorMessage);
       throw err;
     } finally {

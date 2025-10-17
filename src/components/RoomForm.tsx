@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createRoomSchema } from '@/lib/validation'
+import { roomSchema } from '@/lib/validation'
 
 interface RoomFormProps {
   propertyId: string
@@ -27,7 +27,7 @@ export function RoomForm({ propertyId, onSuccess, onCancel }: RoomFormProps) {
     basePrice: number
     images?: string[]
   }>({
-    resolver: zodResolver(createRoomSchema),
+    resolver: zodResolver(roomSchema),
     defaultValues: {
       propertyId
     }

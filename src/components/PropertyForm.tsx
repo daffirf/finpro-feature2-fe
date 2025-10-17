@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createPropertySchema } from '@/lib/validation'
+import { propertySchema } from '@/lib/validation'
 
 interface PropertyFormProps {
   onSuccess: () => void
@@ -28,7 +28,7 @@ export function PropertyForm({ onSuccess, onCancel }: PropertyFormProps) {
     amenities?: string[]
     images?: string[]
   }>({
-    resolver: zodResolver(createPropertySchema)
+    resolver: zodResolver(propertySchema)
   })
 
   const watchedAmenities = watch('amenities') || []
