@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createReviewSchema } from '@/lib/validation'
+import { reviewSchema } from '@/lib/validation'
 
 interface ReviewFormProps {
   bookingId: string
@@ -25,7 +25,7 @@ export function ReviewForm({ bookingId, onSuccess }: ReviewFormProps) {
     rating: number
     comment: string
   }>({
-    resolver: zodResolver(createReviewSchema),
+    resolver: zodResolver(reviewSchema),
     defaultValues: {
       bookingId,
       rating: 5

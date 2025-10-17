@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { api, setAuthToken } from '@/lib/api';
 
 export interface LoginCredentials {
   email: string;
@@ -16,33 +17,28 @@ export function useLogin() {
     setError(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
+      const data = await api.post<{
+        token?: string;
+        user?: { role: string };
+      }>('/auth/login', credentials);
 
       // Store token and user data
       if (data.token) {
-        localStorage.setItem('authToken', data.token);
+        setAuthToken(data.token); // Use helper function for consistency
         localStorage.setItem('user', JSON.stringify(data.user));
+        // Trigger custom event for header update
+        window.dispatchEvent(new CustomEvent('authChange'));
       }
 
-      // Redirect based on user role
-      if (data.user?.role === 'ADMIN') {
-        router.push('/admin');
-      } else if (data.user?.role === 'TENANT') {
-        router.push('/tenant');
+      // Redirect based on user role (case-insensitive)
+      const userRole = data.user?.role?.toLowerCase();
+      
+      if (userRole === 'user') {
+        router.push('/landing');
+      } else if (userRole === 'tenant') {
+        router.push('/dashboard');
       } else {
-        router.push('/search');
+        router.push('/dashboard'); // Default fallback to dashboard
       }
 
       return data;
@@ -56,13 +52,15 @@ export function useLogin() {
   };
 
   const logout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
-    router.push('/login');
+    // Trigger custom event for header update
+    window.dispatchEvent(new CustomEvent('authChange'));
+    router.push('/auth/login');
   };
 
   const isAuthenticated = () => {
-    return !!localStorage.getItem('authToken');
+    return !!localStorage.getItem('token');
   };
 
   const getCurrentUser = () => {

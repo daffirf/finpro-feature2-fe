@@ -36,13 +36,13 @@ export function Navbar() {
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Link 
-              href="/login" 
+              href="/auth/login" 
               className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
             >
               Login
             </Link>
             <Link 
-              href="/register" 
+              href="/auth/register" 
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
               Register
@@ -87,14 +87,14 @@ export function Navbar() {
               </Link>
               <div className="pt-4 border-t border-gray-100">
                 <Link 
-                  href="/login" 
+                  href="/auth/login" 
                   className="block text-gray-600 hover:text-gray-900 font-medium transition-colors px-4 py-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Login
                 </Link>
                 <Link 
-                  href="/register" 
+                  href="/auth/register" 
                   className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium mx-4 mt-2 text-center"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
