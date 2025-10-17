@@ -37,7 +37,7 @@ export default function BookingDetailPage() {
 
   useEffect(() => {
     fetchBooking()
-  }, [params.id])
+  }, [params.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchBooking = async () => {
     setIsLoading(true)
@@ -50,7 +50,7 @@ export default function BookingDetailPage() {
       } else {
         setError(data.error || 'Gagal memuat data pemesanan')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)
@@ -59,6 +59,36 @@ export default function BookingDetailPage() {
 
   const handlePaymentSuccess = () => {
     fetchBooking() // Refresh booking data
+  }
+
+  const handleCancelBooking = async () => {
+    if (!booking || !confirm('Apakah Anda yakin ingin membatalkan pemesanan ini? Tindakan ini tidak dapat dibatalkan.')) {
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const response = await fetch(`/api/bookings/${booking.id}/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        // Refresh booking data
+        fetchBooking()
+        alert('Pemesanan berhasil dibatalkan')
+      } else {
+        alert(result.error || 'Gagal membatalkan pemesanan')
+      }
+    } catch {
+      alert('Terjadi kesalahan server')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (isLoading) {
@@ -252,11 +282,7 @@ export default function BookingDetailPage() {
                 <div className="space-y-3">
                   {booking.status === 'PENDING_PAYMENT' && (
                     <button
-                      onClick={() => {
-                        if (confirm('Apakah Anda yakin ingin membatalkan pemesanan ini?')) {
-                          // Handle cancel booking
-                        }
-                      }}
+                      onClick={handleCancelBooking}
                       className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
                     >
                       Batalkan Pemesanan

@@ -5,16 +5,9 @@ import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { TenantDashboard } from '@/components/TenantDashboard'
 
-interface User {
-  id: string
-  name: string
-  email: string
-  role: string
-}
 
 export default function TenantPage() {
   const [isLoading, setIsLoading] = useState(true)
-  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
     // Check if user is logged in and is a tenant
@@ -33,7 +26,7 @@ export default function TenantPage() {
       .then(res => res.json())
       .then(data => {
         if (data.user && data.user.role === 'TENANT') {
-          setUser(data.user)
+          // User is valid tenant
         } else {
           window.location.href = '/unauthorized'
         }

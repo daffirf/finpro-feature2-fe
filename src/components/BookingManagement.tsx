@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { formatCurrency, formatDateTime } from '@/lib/utils'
+import { Pagination } from './Pagination'
+import { EmailReminderModal } from './EmailReminderModal'
 
 interface Booking {
   id: string
@@ -29,23 +31,50 @@ export function BookingManagement() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+  const itemsPerPage = 10
+  const [emailReminderModal, setEmailReminderModal] = useState<{
+    isOpen: boolean
+    bookingId: string
+    bookingData: {
+      user: { name: string; email: string }
+      property: { name: string }
+      room: { name: string }
+      checkIn: string
+      checkOut: string
+    } | null
+  }>({
+    isOpen: false,
+    bookingId: '',
+    bookingData: null
+  })
 
   useEffect(() => {
     fetchBookings()
-  }, [filter])
+  }, [filter, currentPage]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchBookings = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/tenant/bookings?status=${filter}`)
+      const params = new URLSearchParams({
+        status: filter,
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString()
+      })
+      
+      const response = await fetch(`/api/tenant/bookings?${params}`)
       const data = await response.json()
       
       if (response.ok) {
         setBookings(data.bookings)
+        setTotalPages(data.totalPages || 1)
+        setTotalItems(data.totalItems || 0)
       } else {
         setError(data.error || 'Gagal memuat pemesanan')
       }
-    } catch (error) {
+    } catch {
       setError('Terjadi kesalahan server')
     } finally {
       setIsLoading(false)
@@ -77,6 +106,29 @@ export function BookingManagement() {
       }
     } catch (error) {
       console.error('Error rejecting payment:', error)
+    }
+  }
+
+  const cancelUserOrder = async (bookingId: string) => {
+    if (!confirm('Apakah Anda yakin ingin membatalkan pesanan user ini? Tindakan ini tidak dapat dibatalkan.')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/tenant/bookings/${bookingId}/cancel`, {
+        method: 'POST'
+      })
+
+      if (response.ok) {
+        fetchBookings() // Refresh data
+        alert('Pesanan user berhasil dibatalkan')
+      } else {
+        const result = await response.json()
+        alert(result.error || 'Gagal membatalkan pesanan')
+      }
+    } catch (error) {
+      console.error('Error cancelling user order:', error)
+      alert('Terjadi kesalahan server')
     }
   }
 
@@ -216,9 +268,72 @@ export function BookingManagement() {
                   </button>
                 </div>
               )}
+
+              {booking.status === 'PENDING_PAYMENT' && (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => cancelUserOrder(booking.id)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Batalkan Pesanan User
+                  </button>
+                </div>
+              )}
+
+              {booking.status === 'CONFIRMED' && (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setEmailReminderModal({
+                      isOpen: true,
+                      bookingId: booking.id,
+                      bookingData: {
+                        user: booking.user,
+                        property: booking.property,
+                        room: booking.room,
+                        checkIn: booking.checkIn,
+                        checkOut: booking.checkOut
+                      }
+                    })}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Kirim Email Reminder
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
+      )}
+
+      {/* Pagination */}
+      {!isLoading && bookings.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={(page) => {
+            setCurrentPage(page)
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
+        />
+      )}
+
+      {/* Email Reminder Modal */}
+      {emailReminderModal.bookingData && (
+        <EmailReminderModal
+          isOpen={emailReminderModal.isOpen}
+          onClose={() => setEmailReminderModal({
+            isOpen: false,
+            bookingId: '',
+            bookingData: null
+          })}
+          bookingId={emailReminderModal.bookingId}
+          bookingData={emailReminderModal.bookingData}
+          onSuccess={() => {
+            // Refresh bookings or show success message
+          }}
+        />
       )}
     </div>
   )
