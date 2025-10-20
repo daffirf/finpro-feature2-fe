@@ -12,7 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import AvatarUpload from '@/components/AvatarUpload';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   User, 
@@ -44,7 +45,7 @@ type PasswordFormData = {
 
 export default function UserProfilePage() {
   const router = useRouter();
-  const { profile, isLoading, error, isUpdating, updateProfile, changePassword } = useUserProfile();
+  const { profile, isLoading, error, isUpdating, updateProfile, changePassword, uploadAvatar, removeAvatar } = useUserProfile();
   
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
@@ -229,11 +230,14 @@ export default function UserProfilePage() {
             <Card className="border-gray-200 shadow-lg">
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
-                  <Avatar className="w-24 h-24 border-4 border-teal-100">
-                    <AvatarFallback className="bg-gradient-to-br from-teal-500 to-teal-600 text-white text-2xl font-semibold">
-                      {getInitials(profile.name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <AvatarUpload
+                    currentAvatarUrl={profile.avatarUrl}
+                    userName={profile.name}
+                    onUpload={uploadAvatar}
+                    onRemove={profile.avatarUrl ? async () => { await removeAvatar() } : undefined}
+                    isUploading={isUpdating}
+                    size="xl"
+                  />
                 </div>
                 <CardTitle className="text-2xl">{profile.name}</CardTitle>
                 <CardDescription className="flex items-center justify-center gap-2 mt-2">
@@ -522,17 +526,6 @@ export default function UserProfilePage() {
                         {passwordErrors.confirmPassword && (
                           <p className="text-sm text-red-600">{passwordErrors.confirmPassword.message}</p>
                         )}
-                      </div>
-
-                      {/* Info Box */}
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 className="text-sm font-medium text-blue-900 mb-2">Tips Password yang Kuat:</h4>
-                        <ul className="text-xs text-blue-800 space-y-1 list-disc list-inside">
-                          <li>Minimal 6 karakter (lebih panjang lebih baik)</li>
-                          <li>Kombinasi huruf besar, huruf kecil, dan angka</li>
-                          <li>Gunakan karakter spesial (!@#$%^&*)</li>
-                          <li>Hindari informasi pribadi yang mudah ditebak</li>
-                        </ul>
                       </div>
 
                       {/* Submit Button */}

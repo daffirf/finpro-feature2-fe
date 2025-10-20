@@ -3,6 +3,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phone?: string;
+  avatarUrl?: string | null;
   role: 'user' | 'tenant' | 'admin';
   createdAt?: string;
   updatedAt?: string;

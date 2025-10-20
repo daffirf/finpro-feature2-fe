@@ -37,7 +37,7 @@ export function useUserProfile() {
       }
 
       // Then fetch fresh data from API
-      const data = await api.get<UserProfile>('/auth/me');
+      const data = await api.get<UserProfile>('/user/me');
       setProfile(data);
       
       // Update localStorage with fresh data
@@ -63,7 +63,8 @@ export function useUserProfile() {
     setError(null);
 
     try {
-      const updatedProfile = await api.patch<UserProfile>('/auth/profile', data);
+      if (!profile?.id) throw new Error('User ID not found');
+      const updatedProfile = await api.patch<UserProfile>(`/user/${profile.id}`, data);
       setProfile(updatedProfile);
       
       // Update localStorage
@@ -88,14 +89,80 @@ export function useUserProfile() {
     setError(null);
 
     try {
-      await api.post('/auth/change-password', {
-        currentPassword: data.currentPassword,
+      await api.patch('/auth/change-password', {
+        oldPassword: data.currentPassword,
         newPassword: data.newPassword,
       });
       
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Gagal mengubah password';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Upload avatar
+  const uploadAvatar = async (file: File) => {
+    setIsUpdating(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/auth/avatar`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Gagal mengupload avatar');
+      }
+
+      const updatedProfile = await response.json();
+      setProfile(updatedProfile);
+      
+      // Update localStorage
+      localStorage.setItem('user', JSON.stringify(updatedProfile));
+      
+      // Trigger custom event for header update
+      window.dispatchEvent(new CustomEvent('authChange'));
+      
+      return updatedProfile;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Gagal mengupload avatar';
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Remove avatar
+  const removeAvatar = async () => {
+    setIsUpdating(true);
+    setError(null);
+
+    try {
+      const updatedProfile = await api.delete<UserProfile>('/auth/avatar');
+      setProfile(updatedProfile);
+      
+      // Update localStorage
+      localStorage.setItem('user', JSON.stringify(updatedProfile));
+      
+      // Trigger custom event for header update
+      window.dispatchEvent(new CustomEvent('authChange'));
+      
+      return updatedProfile;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Gagal menghapus avatar';
       setError(errorMessage);
       throw err;
     } finally {
@@ -119,6 +186,8 @@ export function useUserProfile() {
     isUpdating,
     updateProfile,
     changePassword,
+    uploadAvatar,
+    removeAvatar,
     refreshProfile,
   };
 }

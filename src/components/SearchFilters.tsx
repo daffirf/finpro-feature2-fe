@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { PropertyCategory, categoryConfig } from '@/lib/utils'
 
 interface Filters {
+  category?: PropertyCategory | ''
   sortBy: string
   minPrice: string
   maxPrice: string
@@ -31,7 +33,16 @@ const sortOptions = [
   { value: 'price_asc', label: 'Harga Terendah' },
   { value: 'price_desc', label: 'Harga Tertinggi' },
   { value: 'rating_desc', label: 'Rating Tertinggi' },
+  { value: 'newest', label: 'Terbaru' },
   { value: 'name_asc', label: 'Nama A-Z' }
+]
+
+const categoryOptions = [
+  { value: '', label: 'Semua Kategori' },
+  { value: 'villa', label: '🏖️ Villa' },
+  { value: 'house', label: '🏠 House' },
+  { value: 'apartment', label: '🏢 Apartment' },
+  { value: 'guest_house', label: '🏡 Guest House' }
 ]
 
 export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
@@ -51,6 +62,7 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
 
   const clearFilters = () => {
     onFilterChange({
+      category: '',
       sortBy: 'price_asc',
       minPrice: '',
       maxPrice: '',
@@ -79,6 +91,24 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
 
       {isExpanded && (
         <div className="space-y-6">
+          {/* Category Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Tipe Properti
+            </label>
+            <select
+              value={filters.category || ''}
+              onChange={(e) => onFilterChange({ category: e.target.value as PropertyCategory | '' })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            >
+              {categoryOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Sort By */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -87,7 +117,7 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
             <select
               value={filters.sortBy}
               onChange={(e) => onFilterChange({ sortBy: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -110,7 +140,7 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
                   placeholder="0"
                   value={filters.minPrice}
                   onChange={(e) => handlePriceChange('minPrice', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -120,7 +150,7 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
                   placeholder="∞"
                   value={filters.maxPrice}
                   onChange={(e) => handlePriceChange('maxPrice', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -138,7 +168,7 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
                     type="checkbox"
                     checked={filters.amenities.includes(amenity)}
                     onChange={() => handleAmenityToggle(amenity)}
-                    className="mr-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="mr-3 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
                   />
                   <span className="text-sm text-gray-700">{amenity}</span>
                 </label>
