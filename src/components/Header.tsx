@@ -9,6 +9,7 @@ interface User {
   name: string
   email: string
   role: string
+  avatarUrl?: string | null
 }
 
 export function Header() {
@@ -154,11 +155,19 @@ export function Header() {
                 <div className="relative">
                   <button 
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                    className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center hover:scale-105 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 overflow-hidden"
                   >
-                    <span className="text-white font-semibold">
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
+                    {user.avatarUrl ? (
+                      <img 
+                        src={user.avatarUrl} 
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-white font-semibold">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </button>
                   
                   {/* Dropdown Menu */}
