@@ -24,52 +24,39 @@ import {
 } from 'lucide-react'
 import { FormField } from '../../../components/register/FormField'
 import { RoleSelection } from '../../../components/register/RoleSelection'
+import { GoogleOAuthButton } from '@/components/GoogleOAuthButton'
 
 interface RegisterFormData {
   name: string
   email: string
-  password: string
-  phone?: string
-  role: 'USER' | 'TENANT'
+  role: 'user' | 'tenant'
 }
 
 export default function RegisterPage() {
   const [success, setSuccess] = useState(false)
   const { register: registerUser, isLoading, error } = useRegister()
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    setValue
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      role: 'USER'
-    }
+  const [formData, setFormData] = useState<RegisterFormData>({
+    name: '',
+    email: '',
+    role: 'user'
   })
+  
+  const [registeredEmail, setRegisteredEmail] = useState('')
 
-  const selectedRole = watch('role')
-
-  const handleRoleChange = (value: string) => {
-    setValue('role', value as 'USER' | 'TENANT', { shouldValidate: true })
-  }
-
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
     try {
-      // Set success state untuk menampilkan loading screen
+      await registerUser(formData)
+      setRegisteredEmail(formData.email)
       setSuccess(true)
-      // Register akan otomatis login dan redirect
-      await registerUser(data)
     } catch (error) {
       console.error('Registration error:', error)
-      setSuccess(false)
-      // Error akan ditampilkan oleh error state dari useRegister
     }
   }
  
-  // Loading state saat proses registrasi dan auto-login
+  // Success state - Check Your Email
   if (success) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -81,19 +68,38 @@ export default function RegisterPage() {
             <Card className="shadow-xl border-0">
               <CardContent className="pt-12 pb-12 text-center">
                 <div className="flex justify-center mb-6">
-                  <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center">
-                    <CheckCircle2 className="w-12 h-12 text-teal-600 animate-bounce" />
+                  <div className="w-24 h-24 bg-teal-100 rounded-full flex items-center justify-center">
+                    <Mail className="w-12 h-12 text-teal-600" />
                   </div>
                 </div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                  Registrasi Berhasil! 🎉
+                  Cek Email Anda! 📧
                 </h1>
-                <p className="text-gray-600 mb-8">
-                  Akun Anda berhasil dibuat. Sedang memproses login otomatis...
+                <p className="text-gray-600 mb-2">
+                  Kami telah mengirimkan link verifikasi ke
                 </p>
-                <div className="flex justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+                <p className="text-lg font-semibold text-teal-600 mb-6">
+                  {registeredEmail}
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+                  <p className="text-sm text-gray-700">
+                    <strong>Langkah selanjutnya:</strong>
+                  </p>
+                  <ol className="text-sm text-gray-600 mt-2 space-y-1 list-decimal list-inside">
+                    <li>Buka inbox email Anda</li>
+                    <li>Klik link verifikasi yang kami kirim</li>
+                    <li>Buat password untuk akun Anda</li>
+                    <li>Login dan mulai menggunakan layanan</li>
+                  </ol>
                 </div>
+                <p className="text-xs text-gray-500 mb-6">
+                  Tidak menerima email? Cek folder spam atau tunggu beberapa menit
+                </p>
+                <Link href="/auth/login">
+                  <Button variant="outline" className="w-full">
+                    Kembali ke Login
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
@@ -141,56 +147,55 @@ export default function RegisterPage() {
                 </Alert>
               )}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                <FormField
-                  id="name"
-                  label="Nama Lengkap"
-                  type="text"
-                  placeholder="Masukkan nama lengkap"
-                  icon={User}
-                  error={errors.name?.message}
-                  required
-                  register={register('name')}
-                />
+              <form onSubmit={onSubmit} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Nama Lengkap <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    placeholder="Masukkan nama lengkap"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    required
+                  />
+                </div>
 
-                <FormField
-                  id="email"
-                  label="Email"
-                  type="email"
-                  placeholder="nama@email.com"
-                  icon={Mail}
-                  error={errors.email?.message}
-                  required
-                  register={register('email')}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    placeholder="nama@email.com"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    required
+                  />
+                </div>
 
-                <FormField
-                  id="password"
-                  label="Password"
-                  type="password"
-                  placeholder="Minimal 6 karakter"
-                  icon={Lock}
-                  error={errors.password?.message}
-                  required
-                  register={register('password')}
-                />
-
-                <FormField
-                  id="phone"
-                  label="Nomor Telepon"
-                  type="tel"
-                  placeholder="08xxxxxxxxxx"
-                  icon={Phone}
-                  error={errors.phone?.message}
-                  optional
-                  register={register('phone')}
-                />
-
-                <RoleSelection
-                  selectedRole={selectedRole}
-                  error={errors.role?.message}
-                  onValueChange={handleRoleChange}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Daftar Sebagai <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={formData.role}
+                    onChange={(e) => setFormData({...formData, role: e.target.value as 'user' | 'tenant'})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  >
+                    <option value="user">🏠 Guest (Memesan Penginapan)</option>
+                    <option value="tenant">🏢 Pemilik Properti (Menyewakan)</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formData.role === 'user' 
+                      ? 'Sebagai Guest, Anda dapat mencari dan memesan penginapan'
+                      : 'Sebagai Pemilik Properti, Anda dapat mendaftarkan properti untuk disewakan'}
+                  </p>
+                </div>
 
                 {/* Submit Button */}
                 <Button
@@ -222,6 +227,9 @@ export default function RegisterPage() {
                 </div>
               </div>
 
+              {/* Google OAuth */}
+              <GoogleOAuthButton type="register" callbackUrl="/dashboard" />
+
               {/* Login Link */}
               <div className="text-center">
                 <p className="text-gray-600">
@@ -238,17 +246,28 @@ export default function RegisterPage() {
           </Card>
 
           {/* Additional Info */}
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Dengan mendaftar, Anda menyetujui{' '}
-            <Link href="/terms" className="text-teal-600 hover:underline">
-              Syarat & Ketentuan
-            </Link>{' '}
-            dan{' '}
-            <Link href="/privacy" className="text-teal-600 hover:underline">
-              Kebijakan Privasi
-            </Link>{' '}
-            kami.
-          </p>
+          <div className="mt-6 space-y-3">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-gray-700 text-center">
+                <strong>📧 Tidak perlu password sekarang!</strong>
+              </p>
+              <p className="text-xs text-gray-600 mt-2 text-center">
+                Anda akan menerima email untuk memverifikasi akun dan membuat password
+              </p>
+            </div>
+            
+            <p className="text-center text-sm text-gray-500">
+              Dengan mendaftar, Anda menyetujui{' '}
+              <Link href="/terms" className="text-teal-600 hover:underline">
+                Syarat & Ketentuan
+              </Link>{' '}
+              dan{' '}
+              <Link href="/privacy" className="text-teal-600 hover:underline">
+                Kebijakan Privasi
+              </Link>{' '}
+              kami.
+            </p>
+          </div>
         </div>
       </main>
 

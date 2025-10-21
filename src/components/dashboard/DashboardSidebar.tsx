@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { 
   Home,
-  Calendar,
-  Heart,
-  CreditCard,
-  Settings,
+  Building2,
+  DoorOpen,
+  TrendingUp,
+  BarChart3,
+  Star,
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
@@ -45,28 +46,34 @@ export function DashboardSidebar({ onLogout }: SidebarProps) {
       href: '/dashboard'
     },
     {
-      id: 'bookings',
-      label: 'Booking Saya',
-      icon: Calendar,
-      href: '/dashboard/bookings'
+      id: 'properties',
+      label: 'Property Saya',
+      icon: Building2,
+      href: '/dashboard/properties'
     },
     {
-      id: 'favorites',
-      label: 'Favorit',
-      icon: Heart,
-      href: '/dashboard/favorites'
+      id: 'rooms',
+      label: 'Room Management',
+      icon: DoorOpen,
+      href: '/dashboard/rooms'
     },
     {
-      id: 'payments',
-      label: 'Pembayaran',
-      icon: CreditCard,
-      href: '/dashboard/payments'
+      id: 'peak-season',
+      label: 'Peak Season',
+      icon: TrendingUp,
+      href: '/dashboard/peak-season'
     },
     {
-      id: 'settings',
-      label: 'Pengaturan',
-      icon: Settings,
-      href: '/dashboard/settings'
+      id: 'analytics',
+      label: 'Analytic',
+      icon: BarChart3,
+      href: '/dashboard/analytics'
+    },
+    {
+      id: 'reviews',
+      label: 'Review',
+      icon: Star,
+      href: '/dashboard/reviews'
     }
   ]
 
@@ -87,7 +94,10 @@ export function DashboardSidebar({ onLogout }: SidebarProps) {
 
   const isActive = (href?: string) => {
     if (!href) return false
-    return pathname === href
+    if (href === '/dashboard') {
+      return pathname === '/dashboard'
+    }
+    return pathname === href || pathname.startsWith(href + '/')
   }
 
   const SidebarContent = () => (
@@ -156,6 +166,7 @@ export function DashboardSidebar({ onLogout }: SidebarProps) {
         {utilityItems.map((item) => {
           const Icon = item.icon
           const isLogout = item.id === 'logout'
+          const active = isActive(item.href)
           
           return item.href ? (
             <Link
@@ -163,7 +174,10 @@ export function DashboardSidebar({ onLogout }: SidebarProps) {
               href={item.href}
               className={`
                 flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200
-                text-gray-700 hover:bg-teal-50 hover:text-teal-700
+                ${active 
+                  ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md' 
+                  : 'text-gray-700 hover:bg-teal-50 hover:text-teal-700'
+                }
                 ${isCollapsed ? 'justify-center' : ''}
               `}
               onClick={() => setIsMobileOpen(false)}
@@ -171,6 +185,9 @@ export function DashboardSidebar({ onLogout }: SidebarProps) {
               <Icon className={`${isCollapsed ? 'w-6 h-6' : 'w-5 h-5'} flex-shrink-0`} />
               {!isCollapsed && (
                 <span className="font-medium text-sm">{item.label}</span>
+              )}
+              {active && !isCollapsed && (
+                <div className="ml-auto w-2 h-2 rounded-full bg-white"></div>
               )}
             </Link>
           ) : (

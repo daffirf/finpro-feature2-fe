@@ -58,11 +58,11 @@ export default function ResetPasswordPage() {
     setError(null)
 
     try {
-      // TODO: Replace with actual API call
-      // await api.post('/auth/reset-password', { token, password: data.password })
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const { api } = await import('@/lib/api')
+      await api.post('/auth/reset-password-with-token', { 
+        token, 
+        password: data.password 
+      })
       
       setSuccess(true)
       
@@ -71,7 +71,8 @@ export default function ResetPasswordPage() {
         router.push('/auth/login')
       }, 3000)
     } catch (err) {
-      setError('Gagal mereset password. Link mungkin sudah kadaluarsa.')
+      const errorMessage = err instanceof Error ? err.message : 'Gagal mereset password. Link mungkin sudah kadaluarsa.'
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

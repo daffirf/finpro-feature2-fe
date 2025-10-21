@@ -6,14 +6,12 @@ import Header from '@/components/landing/Header'
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { StatCard, BookingCard, EmptyState } from '@/components/dashboard'
 import { useDashboard, useCurrencyFormatter } from '@/hooks/dashboard'
 import { 
   Calendar, 
   TrendingUp,
   ChevronRight,
-  Sparkles,
   CheckCircle
 } from 'lucide-react'
 
@@ -81,36 +79,6 @@ export default function DashboardPage() {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Card */}
-        <Card className="mb-8 border-0 shadow-lg bg-gradient-to-r from-teal-500 to-blue-600 text-white overflow-hidden">
-          <CardHeader className="pb-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16 border-4 border-white/30">
-                  <AvatarFallback className="bg-white text-teal-600 text-xl font-bold">
-                    {user.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-3xl text-white mb-1">
-                    Selamat Datang, {user.name}! 👋
-                  </CardTitle>
-                  <CardDescription className="text-teal-50">
-                    Kelola semua booking dan aktivitas Anda di sini
-                  </CardDescription>
-                </div>
-              </div>
-              <Button asChild variant="secondary" size="lg" className="bg-white text-teal-600 hover:bg-teal-50">
-                <Link href="/search">
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Cari Penginapan Baru
-                  <ChevronRight className="w-5 h-5 ml-2" />
-                </Link>
-              </Button>
-            </div>
-          </CardHeader>
-        </Card>
-
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
