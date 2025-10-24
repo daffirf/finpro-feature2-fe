@@ -10,7 +10,7 @@ interface RoomCardProps {
     capacity: number;
     totalUnits: number;
     availableUnits: number;
-    status: string;
+    status?: string;
     images: any[];
   };
   onEdit?: (id: number) => void;
@@ -49,13 +49,15 @@ export function RoomCard({ room, onEdit, onDelete }: RoomCardProps) {
             </div>
 
             {/* Status Badge */}
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              room.status === 'active' 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-gray-100 text-gray-700'
-            }`}>
-              {room.status === 'active' ? 'Active' : 'Inactive'}
-            </span>
+            {room.status && (
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                room.status === 'active' 
+                  ? 'bg-green-100 text-green-700' 
+                  : 'bg-gray-100 text-gray-700'
+              }`}>
+                {room.status === 'active' ? 'Active' : 'Inactive'}
+              </span>
+            )}
           </div>
 
           {/* Room Stats */}

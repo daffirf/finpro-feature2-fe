@@ -5,6 +5,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import { 
   DashboardPageLayout,
   PageHeader,
@@ -15,24 +16,36 @@ import {
   EmptyState,
   RoomCard 
 } from '@/components/dashboard';
+import { RoomFormModal } from '@/components/dashboard/RoomFormModal';
 import { DoorOpen, Plus, DollarSign, CheckCircle } from 'lucide-react';
 import { useCurrencyFormatter, useTenantRooms } from '@/hooks/dashboard';
 
 export default function RoomsPage() {
   const { formatCurrency } = useCurrencyFormatter();
+  const [showRoomModal, setShowRoomModal] = useState(false);
+  const [editingRoom, setEditingRoom] = useState<any>(null);
   
   // Use custom hook to fetch rooms from backend
   const { 
     rooms, 
     isLoading, 
     error, 
+    addRoom,
     editRoom, 
     removeRoom 
   } = useTenantRooms();
 
+  const handleAddRoom = () => {
+    setEditingRoom(null);
+    setShowRoomModal(true);
+  };
+
   const handleEditRoom = async (id: number) => {
-    // TODO: Implement edit room modal
-    alert('Fitur edit room akan segera tersedia');
+    const room = rooms.find(r => r.id === id);
+    if (room) {
+      setEditingRoom(room);
+      setShowRoomModal(true);
+    }
   };
 
   const handleDeleteRoom = async (id: number) => {
@@ -45,6 +58,39 @@ export default function RoomsPage() {
       alert('Room berhasil dihapus');
     } catch (error: any) {
       alert(error.message || 'Gagal menghapus room');
+    }
+  };
+
+  const handleSubmitRoom = async (data: any) => {
+    try {
+      const formData = new FormData();
+      formData.append('propertyId', data.propertyId.toString());
+      formData.append('name', data.name);
+      formData.append('description', data.description);
+      formData.append('basePrice', data.basePrice.toString());
+      formData.append('capacity', data.capacity.toString());
+      formData.append('totalUnits', data.totalUnits.toString());
+
+      // Add images if any
+      if (data.images && data.images.length > 0) {
+        data.images.forEach((image: File) => {
+          formData.append('images', image);
+        });
+      }
+
+      if (editingRoom) {
+        // For update, we need to use PATCH with FormData
+        await editRoom(editingRoom.id, formData as any);
+        alert('Room berhasil diupdate!');
+      } else {
+        // For create, use FormData
+        await addRoom(formData as any);
+        alert('Room berhasil ditambahkan!');
+      }
+      setShowRoomModal(false);
+      setEditingRoom(null);
+    } catch (error: any) {
+      alert(error.message || 'Gagal menyimpan room');
     }
   };
 
@@ -82,20 +128,21 @@ export default function RoomsPage() {
   }
 
   return (
-    <DashboardPageLayout>
-      <div className="p-8">
-        <PageHeader
-          icon={DoorOpen}
-          title="Room Management"
-          description="Kelola semua room dari semua property Anda"
-          action={
-            <ActionButton
-              icon={Plus}
-              label="Tambah Room"
-              onClick={() => alert('Fitur tambah room akan segera tersedia')}
-            />
-          }
-        />
+    <>
+      <DashboardPageLayout>
+        <div className="p-8">
+          <PageHeader
+            icon={DoorOpen}
+            title="Room Management"
+            description="Kelola semua room dari semua property Anda"
+            action={
+              <ActionButton
+                icon={Plus}
+                label="Tambah Room"
+                onClick={handleAddRoom}
+              />
+            }
+          />
 
         <StatsGrid>
           <StatCard
@@ -181,6 +228,18 @@ export default function RoomsPage() {
         </ContentCard>
       </div>
     </DashboardPageLayout>
+
+    {/* Room Form Modal */}
+    <RoomFormModal
+      isOpen={showRoomModal}
+      onClose={() => {
+        setShowRoomModal(false);
+        setEditingRoom(null);
+      }}
+      onSubmit={handleSubmitRoom}
+      initialData={editingRoom}
+    />
+    </>
   );
 }
 

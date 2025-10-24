@@ -12,6 +12,7 @@ export interface CreatePropertyPayload {
   province?: string;
   address?: string;
   category: 'villa' | 'hotel' | 'apartment' | 'guest_house';
+  image?: File;
   imageUrls?: string[];
   facilities?: string[];
 }
@@ -51,8 +52,20 @@ export const createProperty = async (data: CreatePropertyPayload) => {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '') +
     '-' + Math.random().toString(36).substr(2, 9);
-    
-  return await api.post('/properties', { ...data, slug });
+  
+  const formData = new FormData();
+  formData.append('name', data.name);
+  formData.append('slug', slug);
+  formData.append('category', data.category);
+  
+  if (data.description) formData.append('description', data.description);
+  if (data.city) formData.append('city', data.city);
+  if (data.province) formData.append('province', data.province);
+  if (data.address) formData.append('address', data.address);
+  if (data.facilities) formData.append('facilities', JSON.stringify(data.facilities));
+  if (data.image) formData.append('image', data.image);
+  
+  return await api.upload('/properties', formData);
 };
 
 export const updateProperty = async (propertyId: number, data: UpdatePropertyPayload) => {
@@ -74,8 +87,6 @@ export interface CreateRoomPayload {
   basePrice: number;
   capacity: number;
   totalUnits: number;
-  imageUrls?: string[];
-  facilities?: string[];
 }
 
 export interface UpdateRoomPayload extends Partial<Omit<CreateRoomPayload, 'propertyId'>> {}
@@ -91,8 +102,6 @@ export interface RoomResponse {
   totalUnits: number;
   availableUnits: number;
   imageUrls: string[];
-  facilities: string[];
-  status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
 }
@@ -105,11 +114,19 @@ export const getRoomsByProperty = async (propertyId: number) => {
   return await api.get(`/tenant/properties/${propertyId}/rooms`);
 };
 
-export const createRoom = async (data: CreateRoomPayload) => {
+export const createRoom = async (data: CreateRoomPayload | FormData) => {
+  // If data is FormData, use upload method for file handling
+  if (data instanceof FormData) {
+    return await api.upload('/tenant/rooms', data);
+  }
   return await api.post('/tenant/rooms', data);
 };
 
-export const updateRoom = async (roomId: number, data: UpdateRoomPayload) => {
+export const updateRoom = async (roomId: number, data: UpdateRoomPayload | FormData) => {
+  // If data is FormData, use upload method for file handling
+  if (data instanceof FormData) {
+    return await api.upload(`/tenant/rooms/${roomId}`, data, 'PATCH', {});
+  }
   return await api.patch(`/tenant/rooms/${roomId}`, data);
 };
 

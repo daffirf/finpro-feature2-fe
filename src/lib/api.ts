@@ -58,14 +58,22 @@ export const api = {
   delete: <T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> =>
     apiClient.delete<T>(endpoint, config).then((response: AxiosResponse<T>) => response.data),
 
-  upload: <T>(endpoint: string, formData: FormData, config?: AxiosRequestConfig): Promise<T> => {
-    return apiClient.post<T>(endpoint, formData, {
+  upload: <T>(endpoint: string, formData: FormData, method: 'POST' | 'PATCH' | 'PUT' = 'POST', config?: AxiosRequestConfig): Promise<T> => {
+    const uploadConfig = {
       ...config,
       headers: {
         'Content-Type': 'multipart/form-data',
         ...config?.headers,
       },
-    }).then((response: AxiosResponse<T>) => response.data);
+    };
+
+    if (method === 'PATCH') {
+      return apiClient.patch<T>(endpoint, formData, uploadConfig).then((response: AxiosResponse<T>) => response.data);
+    } else if (method === 'PUT') {
+      return apiClient.put<T>(endpoint, formData, uploadConfig).then((response: AxiosResponse<T>) => response.data);
+    } else {
+      return apiClient.post<T>(endpoint, formData, uploadConfig).then((response: AxiosResponse<T>) => response.data);
+    }
   },
 };
 

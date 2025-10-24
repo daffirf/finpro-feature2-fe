@@ -8,6 +8,7 @@ export { RoomCard } from './RoomCard'
 
 // Modal Forms
 export { PropertyFormModal } from './PropertyFormModal'
+export { RoomFormModal } from './RoomFormModal'
 export { PeakSeasonFormModal } from './PeakSeasonFormModal'
 
 // Layout Components

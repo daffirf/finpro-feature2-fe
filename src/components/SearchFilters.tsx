@@ -9,6 +9,9 @@ interface Filters {
   minPrice: string
   maxPrice: string
   amenities: string[]
+  roomCapacity?: string
+  roomMinPrice?: string
+  roomMaxPrice?: string
 }
 
 interface SearchFiltersProps {
@@ -66,7 +69,10 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
       sortBy: 'price_asc',
       minPrice: '',
       maxPrice: '',
-      amenities: []
+      amenities: [],
+      roomCapacity: '',
+      roomMinPrice: '',
+      roomMaxPrice: ''
     })
   }
 
@@ -130,7 +136,7 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
           {/* Price Range */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Rentang Harga
+              Rentang Harga Properti
             </label>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -152,6 +158,64 @@ export function SearchFilters({ filters, onFilterChange }: SearchFiltersProps) {
                   onChange={(e) => handlePriceChange('maxPrice', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-200 my-4"></div>
+          
+          {/* Room Filters Section */}
+          <div className="bg-teal-50 p-4 rounded-lg mb-4">
+            <h4 className="text-sm font-semibold text-teal-900 mb-3 flex items-center gap-2">
+              🛏️ Filter Room
+            </h4>
+            
+            {/* Room Capacity */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kapasitas Minimum
+              </label>
+              <select
+                value={filters.roomCapacity || ''}
+                onChange={(e) => onFilterChange({ roomCapacity: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
+              >
+                <option value="">Semua Kapasitas</option>
+                <option value="1">1+ orang</option>
+                <option value="2">2+ orang</option>
+                <option value="3">3+ orang</option>
+                <option value="4">4+ orang</option>
+                <option value="5">5+ orang</option>
+              </select>
+            </div>
+
+            {/* Room Price Range */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Harga Room per Malam
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Min</label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={filters.roomMinPrice || ''}
+                    onChange={(e) => onFilterChange({ roomMinPrice: e.target.value })}
+                    className="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Max</label>
+                  <input
+                    type="number"
+                    placeholder="∞"
+                    value={filters.roomMaxPrice || ''}
+                    onChange={(e) => onFilterChange({ roomMaxPrice: e.target.value })}
+                    className="w-full px-2 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
+                  />
+                </div>
               </div>
             </div>
           </div>

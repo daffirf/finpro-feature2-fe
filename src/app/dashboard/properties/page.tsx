@@ -67,11 +67,7 @@ export default function PropertiesPage() {
         city: data.city,
         province: data.province,
         category: data.category,
-        imageUrls: data.images?.length > 0 
-          ? data.images.map((_: File, index: number) => 
-              `https://placehold.co/800x600/teal/white?text=Property+Image+${index + 1}`
-            )
-          : []
+        image: data.images?.[0]
       };
 
       if (editingProperty) {

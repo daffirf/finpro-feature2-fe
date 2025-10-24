@@ -181,17 +181,23 @@ export function PropertyFormModal({
                   <MapPin className="w-4 h-4" />
                   Kota <span className="text-red-500">*</span>
                 </label>
-                <select
+                <input
+                  type="text"
+                  list="cities-list"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Contoh: Jakarta"
                   required
-                >
-                  <option value="">Pilih Kota</option>
+                />
+                <datalist id="cities-list">
                   {INDONESIAN_CITIES.map(city => (
-                    <option key={city} value={city}>{city}</option>
+                    <option key={city} value={city} />
                   ))}
-                </select>
+                </datalist>
+                <p className="text-xs text-gray-500 mt-1">
+                  Ketik atau pilih dari daftar
+                </p>
               </div>
 
               <div>
