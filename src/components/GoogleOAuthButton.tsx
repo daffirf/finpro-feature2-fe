@@ -1,30 +1,44 @@
 'use client'
 
-import { useGoogleAuth } from '@/hooks/auth/useGoogleAuth'
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
 
 interface GoogleOAuthButtonProps {
   type: 'login' | 'register'
   onGoogleAuth?: () => void
   disabled?: boolean
+  callbackUrl?: string
 }
 
-export function GoogleOAuthButton({ type, onGoogleAuth, disabled = false }: GoogleOAuthButtonProps) {
-  const { loginWithGoogle, registerWithGoogle, isLoading, error } = useGoogleAuth()
+export function GoogleOAuthButton({ 
+  type, 
+  onGoogleAuth, 
+  disabled = false,
+  callbackUrl = '/dashboard'
+}: GoogleOAuthButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleGoogleAuth = async () => {
     try {
-      if (type === 'login') {
-        await loginWithGoogle()
-      } else {
-        await registerWithGoogle()
-      }
+      setIsLoading(true);
+      setError(null);
+      
+      const result = await signIn('google', {
+        callbackUrl,
+        redirect: true,
+      });
 
-      if (onGoogleAuth) {
-        onGoogleAuth()
+      if (result?.error) {
+        setError('Gagal login dengan Google. Silakan coba lagi.');
+      } else if (onGoogleAuth) {
+        onGoogleAuth();
       }
     } catch (error) {
-      console.error('Google OAuth error:', error)
-      // Error is already handled by the hook and displayed in the UI
+      console.error('Google OAuth error:', error);
+      setError('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      setIsLoading(false);
     }
   }
 

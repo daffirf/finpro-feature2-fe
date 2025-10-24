@@ -1,8 +1,3 @@
-/**
- * Dummy Property Data for Testing
- * Matches backend API response structure
- */
-
 import { PropertySearchResult, PropertyDetail, PropertySearchResponse } from '@/types/property'
 
 // Dummy Property Search Results (for Search Page)
@@ -133,6 +128,299 @@ export const dummyPropertySearchResults: PropertySearchResult[] = [
     rooms: [
       { id: 13, name: "Studio Exec", capacity: 2, basePrice: 1000000, totalUnits: 6 },
       { id: 14, name: "1BR Executive", capacity: 2, basePrice: 1500000, totalUnits: 4 }
+    ]
+  },
+  {
+    id: 7,
+    name: "Sunset Beach House Canggu",
+    slug: "sunset-beach-house-canggu",
+    description: "Beach house dengan pemandangan sunset yang memukau. Lokasi strategis dekat dengan beach clubs dan surfing spots. Ideal untuk digital nomads dan surfers.",
+    address: "Jl. Batu Bolong No. 56",
+    city: "Canggu",
+    province: "Bali",
+    category: "house",
+    latitude: -8.648892,
+    longitude: 115.137817,
+    primaryImage: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&auto=format&fit=crop",
+    minPrice: 1800000,
+    averageRating: 4.6,
+    totalReviews: 78,
+    availableRooms: 4,
+    rooms: [
+      { id: 15, name: "Ocean View Master", capacity: 2, basePrice: 2500000, totalUnits: 1 },
+      { id: 16, name: "Garden Room", capacity: 2, basePrice: 1800000, totalUnits: 3 }
+    ]
+  },
+  {
+    id: 8,
+    name: "Urban Loft Apartment Yogyakarta",
+    slug: "urban-loft-apartment-yogyakarta",
+    description: "Loft apartment dengan design industrial chic. Dekat Malioboro dan kraton. Perfect untuk culture enthusiasts dan solo travelers. Akses mudah ke tempat wisata.",
+    address: "Jl. Malioboro No. 45A",
+    city: "Yogyakarta",
+    province: "DI Yogyakarta",
+    category: "apartment",
+    latitude: -7.795580,
+    longitude: 110.369492,
+    primaryImage: "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=800&auto=format&fit=crop",
+    minPrice: 400000,
+    averageRating: 4.2,
+    totalReviews: 143,
+    availableRooms: 12,
+    rooms: [
+      { id: 17, name: "Studio Loft", capacity: 2, basePrice: 400000, totalUnits: 8 },
+      { id: 18, name: "Deluxe Loft", capacity: 3, basePrice: 600000, totalUnits: 4 }
+    ]
+  },
+  {
+    id: 9,
+    name: "Heritage Guest House Solo",
+    slug: "heritage-guest-house-solo",
+    description: "Guest house dengan nuansa Jawa klasik. Arsitektur tradisional dengan modern comfort. Dekat Keraton Solo dan pasar tradisional. Pengalaman budaya yang autentik.",
+    address: "Jl. Slamet Riyadi No. 234",
+    city: "Solo",
+    province: "Jawa Tengah",
+    category: "guest_house",
+    latitude: -7.565830,
+    longitude: 110.826263,
+    primaryImage: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop",
+    minPrice: 350000,
+    averageRating: 4.8,
+    totalReviews: 112,
+    availableRooms: 8,
+    rooms: [
+      { id: 19, name: "Javanese Room", capacity: 2, basePrice: 450000, totalUnits: 4 },
+      { id: 20, name: "Standard Room", capacity: 2, basePrice: 350000, totalUnits: 4 }
+    ]
+  },
+  {
+    id: 10,
+    name: "Cliffside Villa Uluwatu",
+    slug: "cliffside-villa-uluwatu",
+    description: "Villa eksklusif di tebing dengan ocean view 180 derajat. Infinity pool menghadap Samudera Hindia. Ultimate luxury experience dengan sunset view yang tak terlupakan.",
+    address: "Jl. Labuansait No. 12",
+    city: "Uluwatu",
+    province: "Bali",
+    category: "villa",
+    latitude: -8.829090,
+    longitude: 115.084930,
+    primaryImage: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&auto=format&fit=crop",
+    minPrice: 5000000,
+    averageRating: 4.9,
+    totalReviews: 87,
+    availableRooms: 2,
+    rooms: [
+      { id: 21, name: "Presidential Suite", capacity: 2, basePrice: 8000000, totalUnits: 1 },
+      { id: 22, name: "Ocean View Suite", capacity: 2, basePrice: 5000000, totalUnits: 1 }
+    ]
+  },
+  {
+    id: 11,
+    name: "Colonial House Medan",
+    slug: "colonial-house-medan",
+    description: "Rumah kolonial dengan arsitektur klasik. Fully restored dengan modern amenities. Taman luas dan parkir pribadi. Cocok untuk acara keluarga besar.",
+    address: "Jl. Imam Bonjol No. 88",
+    city: "Medan",
+    province: "Sumatera Utara",
+    category: "house",
+    latitude: 3.595196,
+    longitude: 98.672226,
+    primaryImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop",
+    minPrice: 1200000,
+    averageRating: 4.4,
+    totalReviews: 56,
+    availableRooms: 6,
+    rooms: [
+      { id: 23, name: "Master Suite", capacity: 2, basePrice: 1800000, totalUnits: 2 },
+      { id: 24, name: "Classic Room", capacity: 2, basePrice: 1200000, totalUnits: 4 }
+    ]
+  },
+  {
+    id: 12,
+    name: "Riverfront Guest House Makassar",
+    slug: "riverfront-guest-house-makassar",
+    description: "Guest house pinggir sungai dengan suasana tenang. View sungai dari setiap kamar. Dekat pelabuhan dan Fort Rotterdam. Ideal untuk backpackers dan budget travelers.",
+    address: "Jl. Penghibur No. 23",
+    city: "Makassar",
+    province: "Sulawesi Selatan",
+    category: "guest_house",
+    latitude: -5.147665,
+    longitude: 119.432732,
+    primaryImage: "https://images.unsplash.com/photo-1569012871812-f38ee64cd54c?w=800&auto=format&fit=crop",
+    minPrice: 250000,
+    averageRating: 4.1,
+    totalReviews: 94,
+    availableRooms: 10,
+    rooms: [
+      { id: 25, name: "River View", capacity: 2, basePrice: 350000, totalUnits: 5 },
+      { id: 26, name: "Standard", capacity: 2, basePrice: 250000, totalUnits: 5 }
+    ]
+  },
+  {
+    id: 13,
+    name: "Modern Minimalist House Semarang",
+    slug: "modern-minimalist-house-semarang",
+    description: "Rumah minimalis modern di kawasan elite Semarang. Smart home system, solar panel, dan eco-friendly design. Dekat dengan mall dan area bisnis.",
+    address: "Jl. Pandanaran No. 156",
+    city: "Semarang",
+    province: "Jawa Tengah",
+    category: "house",
+    latitude: -7.005145,
+    longitude: 110.438126,
+    primaryImage: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800&auto=format&fit=crop",
+    minPrice: 1400000,
+    averageRating: 4.6,
+    totalReviews: 71,
+    availableRooms: 5,
+    rooms: [
+      { id: 27, name: "Smart Master", capacity: 2, basePrice: 2000000, totalUnits: 1 },
+      { id: 28, name: "Modern Room", capacity: 2, basePrice: 1400000, totalUnits: 4 }
+    ]
+  },
+  {
+    id: 14,
+    name: "Luxury Penthouse Jakarta",
+    slug: "luxury-penthouse-jakarta",
+    description: "Penthouse mewah lantai 45 dengan city view 360 derajat. Private lift access, rooftop terrace, dan smart home automation. Kemewahan maksimal di jantung Jakarta.",
+    address: "Jl. Jend. Sudirman Kav. 52-53",
+    city: "Jakarta",
+    province: "DKI Jakarta",
+    category: "apartment",
+    latitude: -6.209660,
+    longitude: 106.823156,
+    primaryImage: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&auto=format&fit=crop",
+    minPrice: 4500000,
+    averageRating: 4.8,
+    totalReviews: 45,
+    availableRooms: 1,
+    rooms: [
+      { id: 29, name: "Penthouse Suite", capacity: 4, basePrice: 4500000, totalUnits: 1 }
+    ]
+  },
+  {
+    id: 15,
+    name: "Tropical Villa Lombok",
+    slug: "tropical-villa-lombok",
+    description: "Villa tropis dengan private beach access. Pemandangan Gunung Rinjani dan laut. Snorkeling equipment included. Paradise for beach lovers.",
+    address: "Jl. Pantai Senggigi No. 99",
+    city: "Lombok",
+    province: "Nusa Tenggara Barat",
+    category: "villa",
+    latitude: -8.490470,
+    longitude: 116.042320,
+    primaryImage: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&auto=format&fit=crop",
+    minPrice: 2800000,
+    averageRating: 4.7,
+    totalReviews: 98,
+    availableRooms: 4,
+    rooms: [
+      { id: 30, name: "Beachfront Villa", capacity: 2, basePrice: 3500000, totalUnits: 2 },
+      { id: 31, name: "Garden Villa", capacity: 2, basePrice: 2800000, totalUnits: 2 }
+    ]
+  },
+  {
+    id: 16,
+    name: "Budget Studio Apartment Bandung",
+    slug: "budget-studio-apartment-bandung",
+    description: "Studio apartment terjangkau untuk mahasiswa dan young professionals. Fully furnished, WiFi cepat, dan dekat kampus ITB. Budget-friendly dengan fasilitas lengkap.",
+    address: "Jl. Dago No. 234",
+    city: "Bandung",
+    province: "Jawa Barat",
+    category: "apartment",
+    latitude: -6.870120,
+    longitude: 107.613690,
+    primaryImage: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&auto=format&fit=crop",
+    minPrice: 300000,
+    averageRating: 4.0,
+    totalReviews: 187,
+    availableRooms: 20,
+    rooms: [
+      { id: 32, name: "Studio Basic", capacity: 2, basePrice: 300000, totalUnits: 15 },
+      { id: 33, name: "Studio Plus", capacity: 2, basePrice: 400000, totalUnits: 5 }
+    ]
+  },
+  {
+    id: 17,
+    name: "Family Beach House Anyer",
+    slug: "family-beach-house-anyer",
+    description: "Beach house langsung pinggir pantai. BBQ area, kids playground, dan private beach. Perfect untuk family gathering dan reunion. Sunset view yang indah.",
+    address: "Jl. Raya Anyer No. 78",
+    city: "Anyer",
+    province: "Banten",
+    category: "house",
+    latitude: -6.032860,
+    longitude: 105.869217,
+    primaryImage: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&auto=format&fit=crop",
+    minPrice: 2000000,
+    averageRating: 4.5,
+    totalReviews: 63,
+    availableRooms: 5,
+    rooms: [
+      { id: 34, name: "Family Suite", capacity: 4, basePrice: 3000000, totalUnits: 2 },
+      { id: 35, name: "Standard Room", capacity: 2, basePrice: 2000000, totalUnits: 3 }
+    ]
+  },
+  {
+    id: 18,
+    name: "Rustic Mountain Guest House Bogor",
+    slug: "rustic-mountain-guest-house-bogor",
+    description: "Guest house bergaya rustic di kawasan Puncak. Udara sejuk, view pegunungan, dan taman teh. Fireplace untuk malam yang dingin. Perfect mountain retreat.",
+    address: "Jl. Raya Puncak KM 87",
+    city: "Bogor",
+    province: "Jawa Barat",
+    category: "guest_house",
+    latitude: -6.692090,
+    longitude: 106.976890,
+    primaryImage: "https://images.unsplash.com/photo-1587061949409-02df41d5e562?w=800&auto=format&fit=crop",
+    minPrice: 600000,
+    averageRating: 4.6,
+    totalReviews: 129,
+    availableRooms: 7,
+    rooms: [
+      { id: 36, name: "Mountain View Deluxe", capacity: 2, basePrice: 800000, totalUnits: 3 },
+      { id: 37, name: "Standard Room", capacity: 2, basePrice: 600000, totalUnits: 4 }
+    ]
+  },
+  {
+    id: 19,
+    name: "Modern Executive Apartment Surabaya",
+    slug: "modern-executive-apartment-surabaya",
+    description: "Executive apartment dengan fasilitas premium. Swimming pool infinity, gym 24h, dan sky lounge. Lokasi strategis di pusat bisnis Surabaya.",
+    address: "Jl. Mayjen Sungkono No. 89",
+    city: "Surabaya",
+    province: "Jawa Timur",
+    category: "apartment",
+    latitude: -7.289140,
+    longitude: 112.734490,
+    primaryImage: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&auto=format&fit=crop",
+    minPrice: 1100000,
+    averageRating: 4.5,
+    totalReviews: 76,
+    availableRooms: 8,
+    rooms: [
+      { id: 38, name: "1BR Executive", capacity: 2, basePrice: 1100000, totalUnits: 5 },
+      { id: 39, name: "2BR Executive", capacity: 4, basePrice: 1800000, totalUnits: 3 }
+    ]
+  },
+  {
+    id: 20,
+    name: "Beachfront Villa Nusa Dua",
+    slug: "beachfront-villa-nusa-dua",
+    description: "Villa eksklusif di area resort Nusa Dua. Private beach, butler service, dan spa treatment. Ultimate luxury untuk honeymoon atau special occasion.",
+    address: "Kawasan ITDC Nusa Dua",
+    city: "Nusa Dua",
+    province: "Bali",
+    category: "villa",
+    latitude: -8.801540,
+    longitude: 115.229670,
+    primaryImage: "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800&auto=format&fit=crop",
+    minPrice: 6000000,
+    averageRating: 5.0,
+    totalReviews: 52,
+    availableRooms: 2,
+    rooms: [
+      { id: 40, name: "Royal Villa Suite", capacity: 2, basePrice: 9000000, totalUnits: 1 },
+      { id: 41, name: "Luxury Beach Villa", capacity: 2, basePrice: 6000000, totalUnits: 1 }
     ]
   }
 ]
@@ -393,7 +681,7 @@ Lokasi strategis, hanya 5 menit dari:
 
 // Mock API Response for Search
 export const mockPropertySearchResponse: PropertySearchResponse = {
-  data: dummyPropertySearchResults,
+  data: dummyPropertySearchResults.slice(0, 10),
   meta: {
     page: 1,
     limit: 10,

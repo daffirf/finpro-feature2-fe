@@ -14,7 +14,7 @@ import { PropertySearchResponse, PropertyDetailResponse, PropertySearchParams } 
 import { api } from './api'
 
 // Toggle ini untuk switch antara mock data dan real API
-export const USE_MOCK_DATA = false // Set true untuk testing dengan dummy data
+export const USE_MOCK_DATA = true // Set true untuk testing dengan dummy data
 
 /**
  * Mock delay untuk simulate network latency
@@ -25,7 +25,7 @@ const mockDelay = (ms: number = 500) => new Promise(resolve => setTimeout(resolv
  * Search Properties - dengan mock data atau real API
  */
 export async function searchProperties(params: PropertySearchParams): Promise<PropertySearchResponse> {
-  if (USE_MOCK_DATA) {
+  const getMockData = async () => {
     // Simulate network delay
     await mockDelay(800)
     
@@ -81,23 +81,32 @@ export async function searchProperties(params: PropertySearchParams): Promise<Pr
       }
     }
   }
+
+  if (USE_MOCK_DATA) {
+    return getMockData()
+  }
   
-  // Real API call
-  const queryParams = new URLSearchParams()
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== '') {
-      queryParams.append(key, value.toString())
-    }
-  })
-  
-  return api.get<PropertySearchResponse>(`/properties/search?${queryParams.toString()}`)
+  // Try real API, fallback to mock if fails
+  try {
+    const queryParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        queryParams.append(key, value.toString())
+      }
+    })
+    
+    return await api.get<PropertySearchResponse>(`/properties/search?${queryParams.toString()}`)
+  } catch (error) {
+    console.warn('⚠️ Backend API failed, falling back to mock data:', error)
+    return getMockData()
+  }
 }
 
 /**
  * Get Property Detail - dengan mock data atau real API
  */
 export async function getPropertyDetail(id: string | number): Promise<PropertyDetailResponse> {
-  if (USE_MOCK_DATA) {
+  const getMockData = async () => {
     // Simulate network delay
     await mockDelay(600)
     
@@ -114,9 +123,18 @@ export async function getPropertyDetail(id: string | number): Promise<PropertyDe
       property
     }
   }
+
+  if (USE_MOCK_DATA) {
+    return getMockData()
+  }
   
-  // Real API call
-  return api.get<PropertyDetailResponse>(`/properties/${id}`)
+  // Try real API, fallback to mock if fails
+  try {
+    return await api.get<PropertyDetailResponse>(`/properties/${id}`)
+  } catch (error) {
+    console.warn('⚠️ Backend API failed, falling back to mock data:', error)
+    return getMockData()
+  }
 }
 
 /**

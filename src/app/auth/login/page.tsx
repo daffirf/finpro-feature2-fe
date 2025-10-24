@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { LogIn, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react'
 import { FormField } from '../../../components/login/FormField'
+import { GoogleOAuthButton } from '@/components/GoogleOAuthButton'
 
 interface LoginFormData {
   email: string
@@ -136,6 +137,9 @@ export default function LoginPage() {
                   <span className="bg-white px-2 text-gray-500">Atau</span>
                 </div>
               </div>
+
+              {/* Google OAuth */}
+              <GoogleOAuthButton type="login" callbackUrl="/dashboard" />
 
               {/* Register Link */}
               <div className="text-center">

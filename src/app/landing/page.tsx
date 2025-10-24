@@ -6,7 +6,6 @@ import { dummyPropertySearchResults } from "@/data/dummyProperties";
 import Header from "@/components/landing/Header";
 import SearchHero from "@/components/landing/SearchHero";
 import FeaturedProperties from "@/components/landing/FeaturedProperties";
-import CategorySelection from "@/components/landing/CategorySelection";
 import Features from "@/components/landing/Features";
 import Footer from "@/components/landing/Footer";
 
@@ -20,9 +19,6 @@ export default function LandingPage() {
 
       {/* Featured Properties Section */}
       <FeaturedProperties properties={dummyPropertySearchResults} />
-
-      {/* Category Selection Cards */}
-      <CategorySelection />
 
       {/* Features Section */}
       <Features />
