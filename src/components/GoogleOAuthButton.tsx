@@ -14,7 +14,7 @@ export function GoogleOAuthButton({
   type, 
   onGoogleAuth, 
   disabled = false,
-  callbackUrl = '/dashboard'
+  callbackUrl = '/landing' // Default to landing page after login
 }: GoogleOAuthButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,20 +24,25 @@ export function GoogleOAuthButton({
       setIsLoading(true);
       setError(null);
       
+      console.log('🚀 Starting Google OAuth...');
+      console.log('Type:', type);
+      console.log('Callback URL:', callbackUrl);
+      
+      // signIn will handle redirect automatically after successful authentication
       const result = await signIn('google', {
         callbackUrl,
         redirect: true,
       });
 
-      if (result?.error) {
-        setError('Gagal login dengan Google. Silakan coba lagi.');
-      } else if (onGoogleAuth) {
+      console.log('📍 Google OAuth result:', result);
+
+      // Code below won't execute if redirect is true and successful
+      if (onGoogleAuth) {
         onGoogleAuth();
       }
     } catch (error) {
-      console.error('Google OAuth error:', error);
+      console.error('❌ Google OAuth exception:', error);
       setError('Terjadi kesalahan. Silakan coba lagi.');
-    } finally {
       setIsLoading(false);
     }
   }

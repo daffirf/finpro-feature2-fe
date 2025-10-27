@@ -11,6 +11,24 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Lock, AlertCircle, Loader2, CheckCircle2, KeyRound, Eye, EyeOff } from 'lucide-react'
 
+
+function LayoutWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
+      <div className="h-1 bg-gradient-to-r from-teal-500 to-blue-600"></div>
+      <main className="flex-1 flex items-center justify-center px-4 py-8">
+        <Card className="max-w-md w-full shadow-xl">
+          <CardContent className="pt-8 pb-8">
+            {children}
+          </CardContent>
+        </Card>
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
 export default function SetPasswordPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -78,25 +96,8 @@ export default function SetPasswordPage() {
       setIsSuccess(true)
       setTimeout(() => router.push('/auth/login'), 3000)
     } catch (err: any) {
-      // Error already handled by hook
     }
   }
-
-  // Unified layout wrapper
-  const LayoutWrapper = ({ children }: { children: React.ReactNode }) => (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
-      <div className="h-1 bg-gradient-to-r from-teal-500 to-blue-600"></div>
-      <main className="flex-1 flex items-center justify-center px-4 py-8">
-        <Card className="max-w-md w-full shadow-xl">
-          <CardContent className="pt-8 pb-8">
-            {children}
-          </CardContent>
-        </Card>
-      </main>
-      <Footer />
-    </div>
-  )
 
   if (isVerifying) {
     return (

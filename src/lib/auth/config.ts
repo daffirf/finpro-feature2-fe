@@ -22,16 +22,54 @@ export const authOptions: NextAuthOptions = {
     error: '/auth/error',
   },
 
+  // Session configuration - Store in JWT and cookies
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
+
+  // JWT configuration
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+
+  // Cookie configuration - Save token in httpOnly cookies
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      }
+    },
+  },
+
+  // Secret for JWT encryption
+  secret: process.env.NEXTAUTH_SECRET,
+
+  debug: false,
+
   callbacks: {
     async signIn({ user, account, profile }) {
       try {
         if (account?.provider === 'google') {
+          console.log('🔐 Starting Google OAuth authentication...');
+          console.log('📧 User email:', user.email);
+          console.log('🆔 Google ID:', account.providerAccountId);
+          
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+          console.log('🌐 Backend API URL:', `${apiUrl}/auth/google`);
+          
           // Send Google user data to backend for authentication/registration
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
+          const response = await fetch(`${apiUrl}/auth/google`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
+            credentials: 'include', 
             body: JSON.stringify({
               email: user.email,
               name: user.name,
@@ -40,12 +78,17 @@ export const authOptions: NextAuthOptions = {
             }),
           });
 
+          console.log('📡 Backend response status:', response.status);
+
           if (!response.ok) {
-            console.error('Backend authentication failed');
-            return false;
+            const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+            console.error('❌ Backend authentication failed:', errorData);
+            throw new Error(errorData.message || 'Backend authentication failed');
           }
 
           const data = await response.json();
+          console.log('✅ Backend authentication successful');
+          console.log('👤 User role:', data.user?.role);
           
           // Store backend data in user object
           user.id = data.user.id;
@@ -60,7 +103,9 @@ export const authOptions: NextAuthOptions = {
         
         return true;
       } catch (error) {
-        console.error('Google sign-in error:', error);
+        console.error('❌ Google sign-in error:', error);
+        console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+        // Return false to prevent sign in
         return false;
       }
     },
@@ -68,13 +113,13 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       // Initial sign in
       if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        token.picture = user.image;
-        token.role = user.role;
-        token.isEmailVerified = user.isEmailVerified;
-        token.backendToken = user.backendToken;
+        token.id = user.id || '';
+        token.email = user.email || '';
+        token.name = user.name || '';
+        token.picture = user.image || undefined;
+        token.role = user.role || 'user';
+        token.isEmailVerified = user.isEmailVerified || false;
+        token.backendToken = user.backendToken || '';
         
         if (user.role === 'tenant') {
           token.tenantId = user.tenantId;
@@ -98,16 +143,41 @@ export const authOptions: NextAuthOptions = {
           session.user.tenantId = token.tenantId as number;
         }
       }
+
       
       return session;
     },
+
+    // Redirect after successful sign in
+    async redirect({ url, baseUrl }) {
+      console.log('🔄 Redirect callback:', { url, baseUrl });
+      
+      // Allows relative callback URLs
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+      return baseUrl;
+    },
   },
 
-  session: {
-    strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+  // Events for logging
+  events: {
+    async signIn({ user, account, isNewUser }) {
+      console.log('✅ User signed in successfully:', {
+        userId: user.id,
+        email: user.email,
+        provider: account?.provider,
+        isNewUser
+      });
+    },
+    async signOut({ token }) {
+      console.log('👋 User signed out:', { userId: token?.id });
+    },
+    // Removed session event to prevent excessive logging
   },
-
-  secret: process.env.NEXTAUTH_SECRET,
 };
 

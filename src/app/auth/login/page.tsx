@@ -139,7 +139,7 @@ export default function LoginPage() {
               </div>
 
               {/* Google OAuth */}
-              <GoogleOAuthButton type="login" callbackUrl="/dashboard" />
+              <GoogleOAuthButton type="login" callbackUrl="/landing" />
 
               {/* Register Link */}
               <div className="text-center">
