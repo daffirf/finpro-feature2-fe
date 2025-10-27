@@ -8,6 +8,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // ✅ CRITICAL: Send httpOnly cookies with every request!
 });
 
 apiClient.interceptors.request.use(
@@ -23,11 +24,65 @@ apiClient.interceptors.request.use(
   }
 );
 
+// Track if we're currently refreshing to prevent multiple refresh calls
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+const onRefreshed = (token: string) => {
+  refreshSubscribers.forEach(callback => callback(token));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback: (token: string) => void) => {
+  refreshSubscribers.push(callback);
+};
+
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    
+    // Handle 401 Unauthorized - try to refresh token
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      if (isRefreshing) {
+        // Wait for the refresh to complete
+        return new Promise((resolve) => {
+          addRefreshSubscriber((token: string) => {
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            resolve(apiClient(originalRequest));
+          });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Try to refresh the token using httpOnly cookie
+        await apiClient.post('/auth/refresh-token');
+        isRefreshing = false;
+        onRefreshed('refreshed'); // Token is in httpOnly cookie, no need to pass actual token
+        
+        // Retry the original request
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        isRefreshing = false;
+        refreshSubscribers = [];
+        
+        // Refresh failed - redirect to login only if in browser
+        if (typeof window !== 'undefined') {
+          console.error('Token refresh failed, redirecting to login');
+          window.location.href = '/auth/login';
+        }
+        return Promise.reject(refreshError);
+      }
+    }
+    
+    // Handle other errors
     if (error.response) {
       const responseData = error.response.data as { message?: string; error?: string };
       const message = responseData?.message || responseData?.error || 'Terjadi kesalahan pada server';
@@ -104,6 +159,7 @@ export const setAuthToken = (token: string): void => {
 export const removeAuthToken = (): void => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('token');
+    localStorage.removeItem('auth-storage');
   }
 };
 

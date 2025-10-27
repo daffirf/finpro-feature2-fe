@@ -3,85 +3,37 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-
-interface User {
-  id: string
-  name: string
-  email: string
-  role: string
-}
+import { useSession, signOut } from 'next-auth/react'
 
 export default function Header() {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { data: session, status } = useSession()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
-    const loadUserData = () => {
-      const token = localStorage.getItem('token')
-      const userStr = localStorage.getItem('user')
+  const isLoading = status === 'loading'
+  const user = session?.user || null
+
+  const handleLogout = async () => {
+    try {
+      // Clear localStorage (backward compatibility)
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      localStorage.removeItem('auth-storage')
       
-      if (token && userStr) {
-        try {
-          const userData = JSON.parse(userStr)
-          setUser(userData)
-          setIsLoading(false)
-        } catch (error) {
-          console.error('Error parsing user data:', error)
-          localStorage.removeItem('token')
-          localStorage.removeItem('user')
-          setUser(null)
-          setIsLoading(false)
-        }
-      } else {
-        setUser(null)
-        setIsLoading(false)
-      }
+      setIsDropdownOpen(false)
+      setIsMobileMenuOpen(false)
+      
+      // Sign out from NextAuth (this also clears cookies and redirects)
+      await signOut({ 
+        callbackUrl: '/',
+        redirect: true 
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+      router.push('/auth/login')
     }
-
-    loadUserData()
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setUser(null)
-    // Trigger custom event for other components
-    window.dispatchEvent(new CustomEvent('authChange'))
-    router.push('/auth/login')
   }
-
-  // Listen for storage changes and custom auth events
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const token = localStorage.getItem('token')
-      const userStr = localStorage.getItem('user')
-      
-      if (token && userStr) {
-        try {
-          const userData = JSON.parse(userStr)
-          setUser(userData)
-        } catch (error) {
-          console.error('Error parsing user data:', error)
-        }
-      } else {
-        setUser(null)
-      }
-    }
-
-    const handleAuthChange = () => {
-      handleStorageChange()
-    }
-
-    window.addEventListener('storage', handleStorageChange)
-    window.addEventListener('authChange', handleAuthChange)
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
-      window.removeEventListener('authChange', handleAuthChange)
-    }
-  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
