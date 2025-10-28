@@ -18,7 +18,8 @@ import {
   User,
   LogOut,
   Menu,
-  X
+  X,
+  Receipt
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -44,6 +45,12 @@ export function DashboardSidebar({ onLogout }: SidebarProps) {
       label: 'Overview',
       icon: Home,
       href: '/dashboard'
+    },
+    {
+      id: 'bookings',
+      label: 'Transaksi',
+      icon: Receipt,
+      href: '/dashboard/bookings'
     },
     {
       id: 'properties',

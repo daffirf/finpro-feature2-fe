@@ -8,7 +8,8 @@ import {
   dummyPropertyDetail,
   mockPropertySearchResponse,
   filterPropertiesByCategory,
-  getPropertyById 
+  getPropertyById,
+  getPropertyBySlug 
 } from '@/data/dummyProperties'
 import { PropertySearchResponse, PropertyDetailResponse, PropertySearchParams } from '@/types/property'
 import { api } from './api'
@@ -112,8 +113,16 @@ export async function getPropertyDetail(id: string | number): Promise<PropertyDe
     
     console.log('🔧 [MOCK API] Get property detail for ID:', id)
     
-    const propertyId = typeof id === 'string' ? parseInt(id) : id
-    const property = getPropertyById(propertyId)
+    let property
+    
+    // Try to get by slug first (if id is string and not a number)
+    if (typeof id === 'string' && isNaN(parseInt(id))) {
+      property = getPropertyBySlug(id)
+    } else {
+      // Get by numeric ID
+      const propertyId = typeof id === 'string' ? parseInt(id) : id
+      property = getPropertyById(propertyId)
+    }
     
     if (!property) {
       throw new Error('Property not found')

@@ -741,3 +741,12 @@ export function getPropertyById(id: number): PropertyDetail | undefined {
   }
 }
 
+// Helper function to get property by slug
+export function getPropertyBySlug(slug: string): PropertyDetail | undefined {
+  const searchResult = dummyPropertySearchResults.find(p => p.slug === slug)
+  if (!searchResult) return undefined
+  
+  // Use the same conversion logic as getPropertyById
+  return getPropertyById(searchResult.id)
+}
+
